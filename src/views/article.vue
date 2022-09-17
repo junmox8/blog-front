@@ -26,11 +26,7 @@
         placeholder="请输入"
       />
       <div style="margin-top: 10px; font-size: 13px">文章主题内容</div>
-      <MarkDown
-        v-model="content"
-        @getData="getData"
-        style="margin-top: 10px"
-      ></MarkDown>
+      <MarkDown @getData="getData" style="margin-top: 10px"></MarkDown>
       <div style="margin-top: 10px; font-size: 13px">文章分类</div>
       <el-tree-select
         style="margin-top: 10px"
@@ -83,6 +79,7 @@
 <script>
 import { data } from "../json/selectData.js";
 import { uploadFile } from "../utils/cos";
+import { uploadContent } from "../utils/fileCos";
 import pubsub from "pubsub-js";
 import MarkDown from "../components/markDown.vue";
 import { ref, reactive, nextTick } from "vue";
@@ -107,9 +104,15 @@ export default {
     const content = ref("");
     const selectData = ref([]);
     const inputVisible = ref(false);
-    const getData = (data) => {
-      console.log(data);
-      console.log(content.value);
+    const getData = async (data) => {
+      content.value = data;
+      const fileContent = new File([data], "", { type: "txt" });
+      const file = new FileReader(fileContent);
+      // 文件上传传参是formdata格式
+      const formdata = new FormData();
+      // 模仿单文件上传给接口传参
+      formdata.append("file", fileContent);
+      await uploadContent(fileContent, fileContent.lastModified);
     };
     const handleStart = async (file) => {
       const result = await uploadFile(file.file, file.file.uid);

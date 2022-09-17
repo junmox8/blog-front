@@ -11,6 +11,8 @@
 </template>
 
 <script>
+import { saveAs } from "file-saver";
+import { useStore } from "vuex";
 import { uploadFile } from "../utils/cos";
 import { ElMessage } from "element-plus";
 import pubsub from "pubsub-js";
@@ -22,9 +24,12 @@ export default {
     pubsub.subscribe("getData", (_, data) => {
       this.$emit("getData", this.text);
     });
+    this.text = this.store.state.Artist.text;
   },
   setup(props, context) {
+    const store = useStore();
     const text = ref("");
+    const saveText = ref("");
     const handleUploadImage = async (event, insertImage, files) => {
       const result = await uploadFile(files[0], files[0].lastModified);
       insertImage({
@@ -33,7 +38,7 @@ export default {
       });
     };
     const save = (te, html) => {
-      text.value = html;
+      store.dispatch("Artist/setText", te);
       ElMessage({
         type: "success",
         message: "保存成功",
@@ -41,6 +46,8 @@ export default {
     };
     return {
       text,
+      saveText,
+      store,
       handleUploadImage,
       save,
     };
