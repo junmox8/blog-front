@@ -43,7 +43,12 @@
         >
       </el-menu>
     </div>
-    <router-view></router-view>
+    <!-- <router-view></router-view> -->
+    <router-view v-slot="{ Component }">
+      <keep-alive include="admin,article">
+        <component :is="Component" />
+      </keep-alive>
+    </router-view>
   </div>
 </template>
 
@@ -61,7 +66,7 @@ export default {
   width: 100%;
   min-height: 100vh;
   height: auto;
-  min-width: 500px;
+  min-width: 1162px;
   overflow: hidden;
 }
 .text {

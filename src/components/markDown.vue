@@ -3,6 +3,7 @@
     <v-md-editor
       :disabled-menus="[]"
       v-model="text"
+      left-toolbar="undo redo clear | h bold italic strikethrough quote tip| ul ol table hr | link image code emoji todo-list| save "
       height="400px"
       @upload-image="handleUploadImage"
       @save="save"

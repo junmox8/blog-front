@@ -30,7 +30,7 @@ export const uploadContent = async (file, fileName) => {
             console.log(JSON.stringify(progressData));
           },
         },
-        (err, data) => {
+        async (err, data) => {
           if (err) {
             ElMessage({
               message: "上传文章内容失败",
@@ -42,16 +42,12 @@ export const uploadContent = async (file, fileName) => {
               message: "上传文章内容成功",
               type: "success",
             });
-            cos.getObject(
-              {
-                Bucket: "huangjunyi-1310688513",
-                Region: "ap-shanghai",
-                Key: "articleContent/" + fileName,
-              },
-              (err, data) => {
-                console.log(err || data.body);
-              }
-            );
+            const data = await cos.getObject({
+              Bucket: "huangjunyi-1310688513",
+              Region: "ap-shanghai",
+              Key: "articleContent/" + fileName,
+            });
+            resolve(data);
           }
         }
       );

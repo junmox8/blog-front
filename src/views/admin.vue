@@ -1,12 +1,41 @@
 <template>
   <div class="container">
     <div class="article-list border">
-      <div style="width: 100%; height: 100%">
-        <div class="container-title">
-          <div class="container-title-left" style="padding-left: 3%">
-            <el-icon><Notebook /></el-icon>
-            <div style="margin-left: 2%">文章列表</div>
+      <div class="container-title">
+        <div class="container-title-left" style="padding-left: 3%">
+          <el-icon><Notebook /></el-icon>
+          <div style="margin-left: 2%">文章列表</div>
+        </div>
+        <div class="container-title-right right2">
+          共
+          <div style="color: #ffd04b; font-size: 20px">
+            {{ articleNumber }}
           </div>
+          篇
+        </div>
+      </div>
+      <div class="article-main">
+        <div style="height: 720px; width: 100%">
+          <Suspense>
+            <template v-slot:fallback>
+              <el-skeleton :rows="15" animated />
+            </template>
+            <template v-slot:default>
+              <Article
+                v-for="(item, index) in articleList"
+                :key="index"
+              ></Article>
+            </template>
+          </Suspense>
+        </div>
+        <div class="article-main-bottom">
+          <el-pagination
+            :page-size="3"
+            :pager-count="11"
+            layout="prev, pager, next"
+            :total="articleNumber"
+            @current-change="changePage"
+          />
         </div>
       </div>
     </div>
@@ -17,6 +46,7 @@
             <el-icon><More /></el-icon>
             <div style="margin-left: 2%">分类</div>
           </div>
+          <div class="container-title-right">more</div>
         </div>
       </div>
     </div>
@@ -27,6 +57,7 @@
             <el-icon><Clock /></el-icon>
             <div style="margin-left: 2%">最近文章</div>
           </div>
+          <div class="container-title-right">more</div>
         </div>
       </div>
     </div>
@@ -49,7 +80,7 @@
             marginheight="0"
             width="290"
             height="110"
-            src="//music.163.com/outchain/player?type=0&id=2075587022&auto=1&height=90"
+            src="//music.163.com/outchain/player?type=0&id=2520739691&auto=1&height=90"
           ></iframe>
         </div>
       </div>
@@ -58,7 +89,33 @@
 </template>
 
 <script>
-export default {};
+import { ref, reactive } from "vue";
+import { getAllArticleNumber, getArticleList } from "../axios/service";
+import Article from "../components/article.vue";
+export default {
+  components: {
+    Article,
+  },
+  async created() {
+    const result = await getAllArticleNumber();
+    this.articleNumber = result.data.data;
+    const result2 = await getArticleList(1);
+    this.articleList = result2.data.data;
+  },
+  setup() {
+    const articleList = ref([]);
+    const articleNumber = ref(0);
+    const changePage = async (n) => {
+      const result = await getArticleList(n);
+      articleList.value = result.data.data;
+    };
+    return {
+      articleList,
+      articleNumber,
+      changePage,
+    };
+  },
+};
 </script>
 
 <style scoped>
@@ -71,6 +128,7 @@ export default {};
   position: relative;
   transition: all;
   transition-duration: 2s;
+  overflow: hidden;
 }
 .article-list {
   width: 50%;
@@ -125,14 +183,36 @@ export default {};
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #8fb7bc;
+  position: relative;
 }
 .container-title-left {
-  width: 31%;
+  width: 60%;
   height: 100%;
   font-size: 13px;
   display: flex;
   align-items: center;
   padding-left: 5%;
+}
+.container-title-right {
+  position: absolute;
+  width: auto;
+  right: 5%;
+  top: 0;
+  height: 100%;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  padding-left: 5%;
+  color: #818ad4;
+  cursor: pointer;
+}
+.right2 {
+  right: 3%;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  color: #000000;
+  letter-spacing: 10px;
 }
 .music-title-contain {
   width: 100%;
@@ -168,5 +248,18 @@ export default {};
     opacity: 1;
     transform: translateX(0px);
   }
+}
+.article-main {
+  width: 100%;
+  height: calc(100% - 40px);
+  position: relative;
+}
+.article-main-bottom {
+  width: 100%;
+  height: calc(100% - 720px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  outline: none;
 }
 </style>

@@ -79,6 +79,7 @@
 <script>
 import { data } from "../json/selectData.js";
 import { uploadFile } from "../utils/cos";
+import { handUpArticle } from "../axios/service";
 import { uploadContent } from "../utils/fileCos";
 import pubsub from "pubsub-js";
 import MarkDown from "../components/markDown.vue";
@@ -106,13 +107,45 @@ export default {
     const inputVisible = ref(false);
     const getData = async (data) => {
       content.value = data;
-      const fileContent = new File([data], "", { type: "txt" });
-      const file = new FileReader(fileContent);
-      // 文件上传传参是formdata格式
-      const formdata = new FormData();
-      // 模仿单文件上传给接口传参
-      formdata.append("file", fileContent);
-      await uploadContent(fileContent, fileContent.lastModified);
+      if (
+        title.value.length > 0 &&
+        introduction.value.length > 0 &&
+        content.value.length > 0 &&
+        dynamicTags.value.length > 0 &&
+        value.value.length > 0
+      ) {
+        if (data.length <= 10000) {
+          const result = await handUpArticle(
+            title.value,
+            introduction.value,
+            content.value,
+            dynamicTags.value.join(),
+            value.value.join()
+          );
+          if (result.data.success == true) {
+            ElMessage({
+              type: "success",
+              message: "成功发布推文",
+            });
+            window.location.reload();
+          }
+        } else
+          ElMessage({
+            type: "error",
+            message: "文本字数超出限制",
+          });
+      } else
+        ElMessage({
+          type: "error",
+          message: "请补充完整信息",
+        });
+      // const fileContent = new File([data], "", { type: "txt" });
+      // const file = new FileReader(fileContent);
+      // // 文件上传传参是formdata格式
+      // const formdata = new FormData();
+      // // 模仿单文件上传给接口传参
+      // formdata.append("file", fileContent);
+      // await uploadContent(fileContent, fileContent.lastModified);
     };
     const handleStart = async (file) => {
       const result = await uploadFile(file.file, file.file.uid);
@@ -167,10 +200,10 @@ export default {
   background-size: cover;
 }
 .box-card {
-  width: 65%;
+  width: 70%;
   min-height: 90vh;
   height: auto;
-  margin-left: 17.5%;
+  margin-left: 15%;
   margin-top: 50px;
   margin-bottom: 50px;
   padding-left: 1%;
