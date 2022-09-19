@@ -16,9 +16,23 @@
       </div>
       <div class="article-main">
         <div style="height: 720px; width: 100%">
-          <Suspense>
+          <Article
+            v-for="(item, index) in articleList"
+            :key="index"
+            :img="item.img"
+            :title="item.title"
+            :introduction="item.introduction"
+            :avatar="item.User.avatar"
+            :name="item.User.name"
+            :time="item.createdAt.substring(0, 10)"
+            :tag="item.Categories"
+            :like="item.like"
+            :comment="item.comment"
+            :look="item.look"
+          ></Article>
+          <!-- <Suspense>
             <template v-slot:fallback>
-              <el-skeleton :rows="15" animated />
+              <Loading></Loading>
             </template>
             <template v-slot:default>
               <Article
@@ -26,7 +40,7 @@
                 :key="index"
               ></Article>
             </template>
-          </Suspense>
+          </Suspense> -->
         </div>
         <div class="article-main-bottom">
           <el-pagination
@@ -89,18 +103,21 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from "vue";
 import { ref, reactive } from "vue";
 import { getAllArticleNumber, getArticleList } from "../axios/service";
 import Article from "../components/article.vue";
 export default {
   components: {
     Article,
+    Loading: defineAsyncComponent(() => import("../components/loading.vue")),
   },
   async created() {
     const result = await getAllArticleNumber();
     this.articleNumber = result.data.data;
     const result2 = await getArticleList(1);
     this.articleList = result2.data.data;
+    console.log(result2);
   },
   setup() {
     const articleList = ref([]);

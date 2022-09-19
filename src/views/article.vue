@@ -112,7 +112,8 @@ export default {
         introduction.value.length > 0 &&
         content.value.length > 0 &&
         dynamicTags.value.length > 0 &&
-        value.value.length > 0
+        value.value.length > 0 &&
+        imageUrl.value.length > 0
       ) {
         if (data.length <= 10000) {
           const result = await handUpArticle(
@@ -120,7 +121,8 @@ export default {
             introduction.value,
             content.value,
             dynamicTags.value.join(),
-            value.value.join()
+            value.value.join(),
+            imageUrl.value
           );
           if (result.data.success == true) {
             ElMessage({

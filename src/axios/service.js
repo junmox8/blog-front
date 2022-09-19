@@ -19,7 +19,8 @@ export const handUpArticle = async (
   introduction,
   content,
   tags,
-  categories
+  categories,
+  img
 ) => {
   return Axios.post("/api/article/handUpArticle", {
     content,
@@ -27,6 +28,7 @@ export const handUpArticle = async (
     introduction,
     categories,
     tags,
+    img,
   });
 };
 export const getAllArticleNumber = async () => {
