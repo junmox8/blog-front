@@ -17,6 +17,7 @@
       <div class="article-main">
         <div style="height: 720px; width: 100%">
           <Article
+            @click="jumpToArticleDetail(item.id)"
             v-for="(item, index) in articleList"
             :key="index"
             :img="item.img"
@@ -62,6 +63,18 @@
           </div>
           <div class="container-title-right">more</div>
         </div>
+        <div class="catalogue-content">
+          <el-tag
+            class="catalogue-tags"
+            size="large"
+            effect="dark"
+            style="margin-left: 6px; cursor: pointer"
+            v-for="(item, index) in tags"
+            :key="index"
+            :type="tagType[index % 5]"
+            >{{ item.name }}</el-tag
+          >
+        </div>
       </div>
     </div>
     <div class="recent-article border">
@@ -72,6 +85,13 @@
             <div style="margin-left: 2%">最近文章</div>
           </div>
           <div class="container-title-right">more</div>
+        </div>
+        <div class="recent-article-main">
+          <Article2
+            v-for="(item, index) in recentArticle"
+            :key="index"
+            :title="item.title"
+          ></Article2>
         </div>
       </div>
     </div>
@@ -105,31 +125,60 @@
 <script>
 import { defineAsyncComponent } from "vue";
 import { ref, reactive } from "vue";
-import { getAllArticleNumber, getArticleList } from "../axios/service";
+import {
+  getAllArticleNumber,
+  getArticleList,
+  getRecentArticle,
+} from "../axios/service";
 import Article from "../components/article.vue";
+import Article2 from "../components/recentArticle.vue";
+import { useRouter } from "vue-router";
 export default {
   components: {
     Article,
     Loading: defineAsyncComponent(() => import("../components/loading.vue")),
+    Article2,
   },
   async created() {
     const result = await getAllArticleNumber();
     this.articleNumber = result.data.data;
     const result2 = await getArticleList(1);
     this.articleList = result2.data.data;
-    console.log(result2);
+    const result3 = await getRecentArticle();
+    this.recentArticle = result3.data.data;
   },
   setup() {
+    const router = useRouter();
     const articleList = ref([]);
+    const recentArticle = ref([]);
     const articleNumber = ref(0);
+    const tagType = ref(["", "success", "info", "warning", "danger"]);
+    const tags = ref([
+      { name: "vue" },
+      { name: "react" },
+      { name: "nodejs" },
+      { name: "express" },
+      { name: "es6" },
+      { name: "git" },
+      { name: "css" },
+      { name: "nginx" },
+      { name: "云服务" },
+    ]);
     const changePage = async (n) => {
       const result = await getArticleList(n);
       articleList.value = result.data.data;
     };
+    const jumpToArticleDetail = async (id) => {
+      router.push("/home/articleDetail?id=" + id);
+    };
     return {
       articleList,
       articleNumber,
+      tags,
+      tagType,
+      recentArticle,
       changePage,
+      jumpToArticleDetail,
     };
   },
 };
@@ -139,7 +188,7 @@ export default {
 .container {
   width: 100%;
   height: auto;
-  margin-top: 59px;
+  margin-top: 30px;
   background-image: url("../assets/摄图网_401729159_渐变低多边形背景（非企业商用）.jpg");
   background-size: cover;
   position: relative;
@@ -278,5 +327,22 @@ export default {
   justify-content: center;
   align-items: center;
   outline: none;
+}
+.catalogue-content {
+  width: 100%;
+  height: 120px;
+  display: flex;
+  flex-wrap: wrap;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 2.5%;
+  padding-right: 2.5%;
+}
+.catalogue-tags:hover {
+  transform: scale(1.1);
+}
+.recent-article-main {
+  height: 220px;
+  width: 100%;
 }
 </style>

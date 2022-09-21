@@ -130,7 +130,11 @@ export default {
               message: "成功发布推文",
             });
             window.location.reload();
-          }
+          } else
+            ElMessage({
+              type: "error",
+              message: "发布推文失败",
+            });
         } else
           ElMessage({
             type: "error",

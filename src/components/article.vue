@@ -150,6 +150,9 @@ export default {
   padding-bottom: 8px;
   display: flex;
   flex-wrap: nowrap;
+  border-bottom-style: solid;
+  border-bottom-color: #edeced;
+  border-bottom-width: 1px;
   /* background-color: green; */
 }
 .img-container {

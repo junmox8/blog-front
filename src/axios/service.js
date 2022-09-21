@@ -37,3 +37,15 @@ export const getAllArticleNumber = async () => {
 export const getArticleList = async (page) => {
   return Axios.get("/api/article/getArticleList?page=" + page);
 };
+export const getRecentArticle = async () => {
+  return Axios.get("/api/article/getRecentArticle");
+};
+export const getArticleById = async (id) => {
+  return Axios.get("/api/article/getArticleById?id=" + id);
+};
+export const handUpComment = async (content, articleId) => {
+  return Axios.post("/api/articleComment/handUpComment", {
+    content,
+    articleId,
+  });
+};
