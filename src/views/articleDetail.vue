@@ -43,7 +43,7 @@
     <div
       style="
         width: 60%;
-        margin-left: 20%;
+        margin-left: 25%;
         height: 50px;
         margin-bottom: 100px;
         display: flex;
@@ -77,6 +77,9 @@
         :id="item.id"
         :userId="item.userId"
       ></comment>
+    </div>
+    <div style="display: flex; justify-content: center; margin-bottom: 50px">
+      <el-pagination background layout="prev, pager, next" :total="1000" />
     </div>
   </div>
 </template>
