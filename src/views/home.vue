@@ -17,7 +17,7 @@
             height: 100%;
             line-height: 59px;
             margin-left: 40px;
-            margin-right: 280px;
+            margin-right: 220px;
             letter-spacing: 2px;
           "
         >
@@ -41,6 +41,28 @@
         <el-menu-item index="/home/message"
           ><el-icon><Edit /></el-icon>留言板</el-menu-item
         >
+        <el-dropdown
+          style="position: absolute; top: 100px; right: 40px; z-index: 100000"
+        >
+          <span style="color: #409eff" class="el-dropdown-link">
+            音乐<el-icon class="el-icon--right"><arrow-down /></el-icon>
+          </span>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item :icon="Plus">
+                <iframe
+                  frameborder="no"
+                  border="0"
+                  marginwidth="0"
+                  marginheight="0"
+                  width="330"
+                  height="450"
+                  src="//music.163.com/outchain/player?type=0&id=2520739691&auto=1&height=430"
+                ></iframe>
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
       </el-menu>
     </div>
     <!-- <router-view></router-view> -->

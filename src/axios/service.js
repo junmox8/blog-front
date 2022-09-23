@@ -49,3 +49,30 @@ export const handUpComment = async (content, articleId) => {
     articleId,
   });
 };
+export const getAllContent = async (id) => {
+  return Axios.get("/api/articleComment/getAllContent?id=" + id);
+};
+export const handUpCommentAttach = async (userId, commentId, content) => {
+  return Axios.post("/api/articleComment/handUpCommentAttach", {
+    userId,
+    commentId,
+    content,
+  });
+};
+export const getTheCommentAttach = async (id) => {
+  return Axios.get("/api/articleComment/getTheCommentAttach?id=" + id);
+};
+export const getUserInfo = async (id) => {
+  return Axios.get("/api/user/getUserInfo?id=" + id);
+};
+export const handUpCommentAttachAttach = async (
+  content,
+  toUserId,
+  commentId
+) => {
+  return Axios.post("/api/articleComment/handUpCommentAttachAttach", {
+    commentId,
+    toUserId,
+    content,
+  });
+};

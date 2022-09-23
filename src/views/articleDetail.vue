@@ -64,21 +64,41 @@
         >提交</el-button
       >
     </div>
+    <div class="comment-area">
+      <comment
+        v-for="(item, index) in commentArr"
+        :key="index"
+        :content="item.content"
+        :time="item.createdAt"
+        :avatar="item.User.avatar"
+        :name="item.User.name"
+        :index="index"
+        :articleId="item.articleId"
+        :id="item.id"
+        :userId="item.userId"
+      ></comment>
+    </div>
   </div>
 </template>
 
 <script>
 import { ref, reactive, toRefs } from "vue";
 import { useRoute } from "vue-router";
-import { getArticleById, handUpComment } from "../axios/service";
+import { getArticleById, handUpComment, getAllContent } from "../axios/service";
 import { ElMessage } from "element-plus";
+import comment from "../components/comment.vue";
 export default {
+  components: {
+    comment,
+  },
   async created() {
     const { data } = await getArticleById(this.$route.query.id);
     (this.title = data.data.title),
       (this.content = data.data.content),
       (this.time = data.data.createdAt.substring(0, 10));
     this.articleId = this.$route.query.id;
+    const result = await getAllContent(this.$route.query.id);
+    this.commentArr = result.data.data;
   },
   setup(props) {
     const route = useRoute();
@@ -87,25 +107,36 @@ export default {
       content: "",
       time: "",
     });
+    const commentArr = ref([]);
     const articleId = ref(0);
     const textarea = ref("");
+
     const handupComment = async () => {
-      const result = await handUpComment(textarea.value, articleId.value);
-      if (result) {
-        ElMessage.success({
-          type: "success",
-          message: "发表评论成功",
-        });
+      if (textarea.value.length > 0) {
+        const result = await handUpComment(textarea.value, articleId.value);
+        if (result) {
+          ElMessage.success({
+            type: "success",
+            message: "发表评论成功",
+          });
+          const result2 = await getAllContent(articleId.value);
+          commentArr.value = result2.data.data;
+        } else
+          ElMessage.error({
+            type: "error",
+            message: result.data.errorMsg,
+          });
       } else
         ElMessage.error({
           type: "error",
-          message: result.data.errorMsg,
+          message: "请填写评论内容",
         });
     };
     return {
       ...toRefs(obj),
       textarea,
       articleId,
+      commentArr,
       handupComment,
     };
   },
@@ -117,7 +148,7 @@ export default {
   width: 100%;
   height: auto;
   margin-top: 59px;
-  background-image: url("../assets/摄图网_401729159_渐变低多边形背景（非企业商用）.jpg");
+  background-image: url("https://huangjunyi-1310688513.cos.ap-shanghai.myqcloud.com/articleCover/%E6%91%84%E5%9B%BE%E7%BD%91_401729159_%E6%B8%90%E5%8F%98%E4%BD%8E%E5%A4%9A%E8%BE%B9%E5%BD%A2%E8%83%8C%E6%99%AF%EF%BC%88%E9%9D%9E%E4%BC%81%E4%B8%9A%E5%95%86%E7%94%A8%EF%BC%89.jpg");
   background-size: cover;
   position: relative;
   transition: all;
@@ -130,5 +161,11 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.comment-area {
+  width: 80%;
+  margin-left: 10%;
+  height: auto;
+  margin-bottom: 100px;
 }
 </style>
