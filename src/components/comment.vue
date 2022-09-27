@@ -34,7 +34,9 @@
         flex-wrap: nowrap;
       "
     >
-      <div class="comment-container-lou">{{ index + 1 }}楼</div>
+      <div class="comment-container-lou">
+        {{ (page - 1) * 5 + index + 1 }}楼
+      </div>
       <div class="comment-container-time">{{ time_tr }}</div>
     </div>
     <div class="comment-content-container">
@@ -77,6 +79,7 @@ export default {
     "articleId",
     "userId",
     "id",
+    "page",
   ],
   async created() {
     this.time_tr = this.time

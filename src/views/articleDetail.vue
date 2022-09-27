@@ -65,6 +65,7 @@
       >
     </div>
     <div class="comment-area">
+      <el-skeleton :rows="8" v-if="commentArr.length == 0 && number != 0" />
       <comment
         v-for="(item, index) in commentArr"
         :key="index"
@@ -76,10 +77,18 @@
         :articleId="item.articleId"
         :id="item.id"
         :userId="item.userId"
+        :page="currentPage"
       ></comment>
     </div>
     <div style="display: flex; justify-content: center; margin-bottom: 50px">
-      <el-pagination background layout="prev, pager, next" :total="1000" />
+      <el-pagination
+        background
+        :page-size="5"
+        layout="prev, pager, next"
+        :total="number"
+        @current-change="changePage"
+        :current-page="currentPage"
+      />
     </div>
   </div>
 </template>
@@ -87,7 +96,12 @@
 <script>
 import { ref, reactive, toRefs } from "vue";
 import { useRoute } from "vue-router";
-import { getArticleById, handUpComment, getAllContent } from "../axios/service";
+import {
+  getArticleById,
+  handUpComment,
+  getAllContent,
+  getCommentNumber,
+} from "../axios/service";
 import { ElMessage } from "element-plus";
 import comment from "../components/comment.vue";
 export default {
@@ -100,8 +114,10 @@ export default {
       (this.content = data.data.content),
       (this.time = data.data.createdAt.substring(0, 10));
     this.articleId = this.$route.query.id;
-    const result = await getAllContent(this.$route.query.id);
+    const result = await getAllContent(this.$route.query.id, 1);
     this.commentArr = result.data.data;
+    const result2 = await getCommentNumber(this.$route.query.id);
+    this.number = result2.data.data;
   },
   setup(props) {
     const route = useRoute();
@@ -113,7 +129,8 @@ export default {
     const commentArr = ref([]);
     const articleId = ref(0);
     const textarea = ref("");
-
+    const currentPage = ref(1);
+    const number = ref(0);
     const handupComment = async () => {
       if (textarea.value.length > 0) {
         const result = await handUpComment(textarea.value, articleId.value);
@@ -122,8 +139,12 @@ export default {
             type: "success",
             message: "发表评论成功",
           });
-          const result2 = await getAllContent(articleId.value);
+          const result2 = await getAllContent(
+            articleId.value,
+            currentPage.value
+          );
           commentArr.value = result2.data.data;
+          number.value++;
         } else
           ElMessage.error({
             type: "error",
@@ -135,12 +156,21 @@ export default {
           message: "请填写评论内容",
         });
     };
+    const changePage = async (page) => {
+      commentArr.value = [];
+      currentPage.value = page;
+      const result = await getAllContent(route.query.id, page);
+      commentArr.value = result.data.data;
+    };
     return {
       ...toRefs(obj),
       textarea,
       articleId,
       commentArr,
+      currentPage,
+      number,
       handupComment,
+      changePage,
     };
   },
 };

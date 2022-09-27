@@ -49,8 +49,10 @@ export const handUpComment = async (content, articleId) => {
     articleId,
   });
 };
-export const getAllContent = async (id) => {
-  return Axios.get("/api/articleComment/getAllContent?id=" + id);
+export const getAllContent = async (id, page) => {
+  return Axios.get(
+    "/api/articleComment/getAllContent?id=" + id + "&page=" + page
+  );
 };
 export const handUpCommentAttach = async (userId, commentId, content) => {
   return Axios.post("/api/articleComment/handUpCommentAttach", {
@@ -65,6 +67,9 @@ export const getTheCommentAttach = async (id) => {
 export const getUserInfo = async (id) => {
   return Axios.get("/api/user/getUserInfo?id=" + id);
 };
+export const getMyUserInfo = async () => {
+  return Axios.get("/api/user/getMyUserInfo");
+};
 export const handUpCommentAttachAttach = async (
   content,
   toUserId,
@@ -74,5 +79,15 @@ export const handUpCommentAttachAttach = async (
     commentId,
     toUserId,
     content,
+  });
+};
+export const getCommentNumber = async (id) => {
+  return Axios.get("/api/articleComment/getCommentNumber?id=" + id);
+};
+export const updateUserInfo = async (name, avatar, introduction) => {
+  return Axios.post("/api/user/updateUserInfo", {
+    name,
+    avatar,
+    introduction,
   });
 };

@@ -99,14 +99,39 @@
       <div style="width: 100%; height: 100%">
         <div class="container-title">
           <div class="container-title-left">
-            <el-icon><Headset /></el-icon>
-            <div style="margin-left: 2%">音乐鉴赏</div>
+            <el-icon><UserFilled /></el-icon>
+            <div style="margin-left: 2%">My MakeFriend</div>
           </div>
         </div>
         <div class="music-title-contain">
-          <div class="music-text">
-            谁还不是个优雅不失风度的人呢,看电脑累了吧,给你推荐一首好听的音乐,闭一下眼睛听着音乐放松放松吧
-          </div>
+          <el-tabs type="border-card" stretch>
+            <el-tab-pane label="联系方式">
+              <div style="width: 100%; display: flex">
+                <div>
+                  <i class="iconfont icon-qq"></i>
+                  <span style="font-size: 13px">931097192</span>
+                </div>
+                <div style="margin-left: 20px">
+                  <i class="iconfont icon-weixin"></i>
+                  <span style="font-size: 13px">junmox8</span>
+                </div>
+              </div>
+              <div style="width: 100%; display: flex; margin-top: 5px">
+                <img
+                  width="20"
+                  src="http://huangjunyi-1310688513.cos.ap-shanghai.myqcloud.com/articleCover/1664120367612"
+                  alt=""
+                />
+                <div style="font-size: 13px">有问题欢迎同学来学习讨论^ ^</div>
+              </div>
+              <div
+                style="font-size: 13px; margin-top: 5px; margin-bottom: 25px"
+              >
+                这个博客是我前段时间突发奇想花了十天写的一个简单系统,照着别人的界面设计自己写的一个小型全栈项目,后续会逐渐完善更多功能,目前比较简陋各位多多包涵,最后欢迎各位加我好友一起交流学习
+              </div>
+            </el-tab-pane>
+            <el-tab-pane label="xxx"> 暂时没想好这里写啥= = </el-tab-pane>
+          </el-tabs>
         </div>
       </div>
     </div>
