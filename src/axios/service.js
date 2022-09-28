@@ -91,3 +91,20 @@ export const updateUserInfo = async (name, avatar, introduction) => {
     introduction,
   });
 };
+export const handUpImgKind = async (name) => {
+  return Axios.post("/api/album/handUpImgKind", {
+    name,
+  });
+};
+export const getAllImgKinds = async () => {
+  return Axios.get("/api/album/getAllImgKinds");
+};
+export const handUpImg = async (urls, kindName) => {
+  return Axios.post("/api/album/handUpImg", {
+    urls,
+    kindName,
+  });
+};
+export const getImgs = async (kindName) => {
+  return Axios.get("/api/album/getImgs?kindName=" + kindName);
+};

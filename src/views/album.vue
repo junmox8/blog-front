@@ -1,10 +1,20 @@
 <template>
-  <el-dialog
-    v-model="dialogVisible"
-    title="添加分类"
-    width="30%"
-    :before-close="handleClose"
-  >
+  <el-dialog v-model="dialogVisible2" title="添加图片">
+    <el-upload
+      v-model:file-list="fileList"
+      list-type="picture-card"
+      :http-request="handleStart"
+    >
+      <el-icon><Plus /></el-icon>
+    </el-upload>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialogVisible2 = false">取消</el-button>
+        <el-button type="primary" @click="upload">确认</el-button>
+      </span>
+    </template>
+  </el-dialog>
+  <el-dialog v-model="dialogVisible" title="添加分类" width="30%">
     <el-input v-model="input" placeholder="请输入分类名" />
     <template #footer>
       <span class="dialog-footer">
@@ -16,9 +26,10 @@
   <div class="container">
     <el-card class="album-container">
       <el-tabs
+        @tab-change="changeTab"
         v-model="editableTabsValue"
         type="card"
-        editable
+        addable
         stretch
         class="demo-tabs"
         @edit="handleTabsEdit"
@@ -30,7 +41,7 @@
           :name="item.name"
         >
           <template v-slot>
-            <div class="pane-container" ref="contain">
+            <div @scroll="scroll" class="pane-container" ref="contain">
               <el-button
                 @click="toTop"
                 class="toTop"
@@ -38,32 +49,13 @@
                 :icon="ArrowUp"
                 circle
               />
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
+              <el-button
+                @click="() => (dialogVisible2 = true)"
+                class="upload"
+                type="primary"
+                :icon="Upload"
+                circle
+              />
             </div>
           </template>
         </el-tab-pane>
@@ -73,15 +65,34 @@
 </template>
 
 <script>
-import { ArrowUp } from "@element-plus/icons-vue";
+import { uploadFile } from "../utils/cos";
+import {
+  handUpImgKind,
+  getAllImgKinds,
+  handUpImg,
+  getImgs,
+} from "../axios/service";
+import { ArrowUp, Upload } from "@element-plus/icons-vue";
 import { ref } from "vue";
+import { ElMessage } from "element-plus";
 export default {
+  async created() {
+    const result = await getAllImgKinds();
+    result.data.data.forEach((item) => {
+      this.editableTabs.push({
+        title: item.name,
+        name: item.name,
+      });
+    });
+  },
   setup() {
     const editableTabsValue = ref("0");
     const editableTabs = ref([]);
     const dialogVisible = ref(false);
+    const dialogVisible2 = ref(false);
     const input = ref("");
     const contain = ref(null);
+    const fileList = ref([]);
     const handleTabsEdit = (targetName, action) => {
       if (action === "add") {
         dialogVisible.value = true;
@@ -105,26 +116,87 @@ export default {
     };
     const addFenlei = async () => {
       dialogVisible.value = false;
-      editableTabs.value.push({
-        title: input.value,
-        name: input.value,
-      });
-      editableTabsValue.value = input.value;
+      const result = await handUpImgKind(input.value);
+      if (result.data.success == true) {
+        const result2 = await getAllImgKinds();
+        editableTabs.value = [];
+        result2.data.data.forEach((item) => {
+          editableTabs.value.push({
+            title: item.name,
+            name: item.name,
+          });
+        });
+        editableTabsValue.value = input.value;
+        ElMessage({
+          type: "success",
+          message: "添加分类成功",
+        });
+      } else
+        ElMessage({
+          type: "error",
+          message: result.data.errorMsg,
+        });
     };
     const toTop = () => {
       contain.value[0].scrollTop = 0;
+    };
+    const scroll = () => {
+      if (
+        contain.value[0].scrollTop + contain.value[0].clientHeight >=
+        contain.value[0].scrollHeight
+      )
+        console.log(1);
+    };
+    const upload = async () => {
+      let urls = "";
+      fileList.value.forEach((item, index) => {
+        if (index != fileList.value.length - 1) urls += item.url + ",";
+        else urls += item.url;
+      });
+      const result = await handUpImg(urls, editableTabsValue.value);
+      if (result.data.success == true) {
+        ElMessage({
+          type: "success",
+          message: "上传图片成功",
+        });
+      } else
+        ElMessage({
+          type: "error",
+          message: result.data.errorMsg,
+        });
+    };
+    const handleStart = async (file) => {
+      const result = await uploadFile(file.file, file.file.uid);
+      fileList.value.push({
+        name: file.file.uid,
+        url: result,
+      });
+      fileList.value.splice(fileList.value.length - 2, 1);
+    };
+    const changeTab = async (name) => {
+      const {
+        data: { data: data2 },
+      } = await getImgs(name);
+      console.log(data2);
     };
     return {
       editableTabsValue,
       editableTabs,
       dialogVisible,
+      dialogVisible2,
       input,
       contain,
       handleTabsEdit,
       handleTabsEdit,
       addFenlei,
       ArrowUp,
+      Upload,
       toTop,
+      scroll,
+      upload,
+      fileList,
+      handleStart,
+      changeTab,
     };
   },
 };
@@ -170,6 +242,11 @@ export default {
 .toTop {
   position: fixed;
   bottom: 200px;
+  right: 180px;
+}
+.upload {
+  position: fixed;
+  bottom: 250px;
   right: 180px;
 }
 </style>
