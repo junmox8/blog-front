@@ -48,7 +48,11 @@
               ref="contain"
               v-loading="loading"
             >
-              <div class="img1-container img-cont" ref="img1_ref">
+              <div
+                class="img1-container img-cont"
+                ref="img1_ref"
+                style="width: 25%; display: inline-block"
+              >
                 <el-image
                   :preview-src-list="allImgs"
                   v-for="(item, index) in allImgs"
@@ -57,7 +61,11 @@
                   :src="item"
                 />
               </div>
-              <div class="img2-container img-cont" ref="img2_ref">
+              <div
+                class="img2-container img-cont"
+                ref="img2_ref"
+                style="width: 25%; display: inline-block"
+              >
                 <el-image
                   v-for="(item, index) in allImgs"
                   :key="index"
@@ -65,7 +73,11 @@
                   :src="item"
                 />
               </div>
-              <div class="img3-container img-cont" ref="img3_ref">
+              <div
+                class="img3-container img-cont"
+                ref="img3_ref"
+                style="width: 25%; display: inline-block"
+              >
                 <el-image
                   v-for="(item, index) in allImgs"
                   :key="index"
@@ -73,7 +85,11 @@
                   :src="item"
                 />
               </div>
-              <div class="img4-container img-cont" ref="img4_ref">
+              <div
+                class="img4-container img-cont"
+                ref="img4_ref"
+                style="width: 25%; display: inline-block"
+              >
                 <el-image
                   v-for="(item, index) in allImgs"
                   :key="index"
@@ -192,12 +208,12 @@ export default {
       contain.value[editableTabsValue.value].scrollTop = 0;
     };
     const scroll = () => {
-      if (
-        contain.value[editableTabsValue.value].scrollTop +
-          contain.value[editableTabsValue.value].clientHeight >=
-        contain.value[editableTabsValue.value].scrollHeight
-      )
-        console.log(editableTabsValue.value);
+      // if (
+      //   contain.value[editableTabsValue.value].scrollTop +
+      //     contain.value[editableTabsValue.value].clientHeight >=
+      //   contain.value[editableTabsValue.value].scrollHeight
+      // )
+      //   console.log(editableTabsValue.value);
     };
     const upload = async () => {
       let urls = "";
@@ -258,6 +274,20 @@ export default {
             name: index,
             url: item,
           });
+          // let h1 =
+          //   img1_ref.value[editableTabsValue.value].getBoundingClientRect()
+          //     .height;
+          // let h2 =
+          //   img2_ref.value[editableTabsValue.value].getBoundingClientRect()
+          //     .height;
+          // let h3 =
+          //   img3_ref.value[editableTabsValue.value].getBoundingClientRect()
+          //     .height;
+          // let h4 =
+          //   img4_ref.value[editableTabsValue.value].getBoundingClientRect()
+          //     .height;
+          // const min = Math.min(h1, h2, h3, h4);
+          // console.log(h1);
         });
         loading.value = false;
       }
@@ -339,10 +369,5 @@ export default {
   position: fixed;
   bottom: 250px;
   right: 180px;
-}
-.img-cont {
-  height: auto;
-  width: 25%;
-  display: inline-block;
 }
 </style>
