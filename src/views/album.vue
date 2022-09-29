@@ -2,6 +2,7 @@
   <el-dialog v-model="dialogVisible2" title="添加图片">
     <el-upload
       v-model:file-list="fileList"
+      multiple
       list-type="picture-card"
       :http-request="handleStart"
     >
@@ -41,7 +42,45 @@
           :name="item.name"
         >
           <template v-slot>
-            <div @scroll="scroll" class="pane-container" ref="contain">
+            <div
+              @scroll="scroll"
+              class="pane-container"
+              ref="contain"
+              v-loading="loading"
+            >
+              <div class="img1-container img-cont" ref="img1_ref">
+                <el-image
+                  :preview-src-list="allImgs"
+                  v-for="(item, index) in allImgs"
+                  :key="index"
+                  style="width: 100%"
+                  :src="item"
+                />
+              </div>
+              <div class="img2-container img-cont" ref="img2_ref">
+                <el-image
+                  v-for="(item, index) in allImgs"
+                  :key="index"
+                  style="width: 100%"
+                  :src="item"
+                />
+              </div>
+              <div class="img3-container img-cont" ref="img3_ref">
+                <el-image
+                  v-for="(item, index) in allImgs"
+                  :key="index"
+                  style="width: 100%"
+                  :src="item"
+                />
+              </div>
+              <div class="img4-container img-cont" ref="img4_ref">
+                <el-image
+                  v-for="(item, index) in allImgs"
+                  :key="index"
+                  style="width: 100%"
+                  :src="item"
+                />
+              </div>
               <el-button
                 @click="toTop"
                 class="toTop"
@@ -73,7 +112,7 @@ import {
   getImgs,
 } from "../axios/service";
 import { ArrowUp, Upload } from "@element-plus/icons-vue";
-import { ref } from "vue";
+import { reactive, ref, toRefs } from "vue";
 import { ElMessage } from "element-plus";
 export default {
   async created() {
@@ -93,6 +132,18 @@ export default {
     const input = ref("");
     const contain = ref(null);
     const fileList = ref([]);
+    const allImgs = ref([]);
+    const loading = ref(false);
+    const imgs = reactive({
+      img1: [],
+      img2: [],
+      img3: [],
+      img4: [],
+    });
+    const img1_ref = ref(null);
+    const img2_ref = ref(null);
+    const img3_ref = ref(null);
+    const img4_ref = ref(null);
     const handleTabsEdit = (targetName, action) => {
       if (action === "add") {
         dialogVisible.value = true;
@@ -138,12 +189,15 @@ export default {
         });
     };
     const toTop = () => {
-      contain.value[0].scrollTop = 0;
+      // contain.value[1].scrollTop = 0;
+      contain.value.forEach((item) => {
+        item.scrollTop = 0;
+      });
     };
     const scroll = () => {
       if (
-        contain.value[0].scrollTop + contain.value[0].clientHeight >=
-        contain.value[0].scrollHeight
+        contain.value[1].scrollTop + contain.value[1].clientHeight >=
+        contain.value[1].scrollHeight
       )
         console.log(1);
     };
@@ -157,13 +211,27 @@ export default {
       if (result.data.success == true) {
         ElMessage({
           type: "success",
-          message: "上传图片成功",
+          message: "该分类更新图片成功",
         });
+        fileList.value = [];
+        const {
+          data: { data: data2 },
+        } = await getImgs(editableTabsValue.value);
+        if (data2[0] && data2[0].url) {
+          allImgs.value = data2[0].url.split(",");
+          allImgs.value.forEach((item, index) => {
+            fileList.value.push({
+              name: index,
+              url: item,
+            });
+          });
+        } else allImgs.value = [];
       } else
         ElMessage({
           type: "error",
           message: result.data.errorMsg,
         });
+      dialogVisible2.value = false;
     };
     const handleStart = async (file) => {
       const result = await uploadFile(file.file, file.file.uid);
@@ -171,13 +239,28 @@ export default {
         name: file.file.uid,
         url: result,
       });
-      fileList.value.splice(fileList.value.length - 2, 1);
+      fileList.value.forEach((item, index) => {
+        if (item.size) fileList.value.splice(index, 1);
+      });
     };
     const changeTab = async (name) => {
+      fileList.value = [];
+      allImgs.value = [];
+      loading.value = true;
       const {
         data: { data: data2 },
       } = await getImgs(name);
-      console.log(data2);
+      if (data2[0] && data2[0].url) {
+        allImgs.value = data2[0].url.split(",");
+        allImgs.value.forEach((item, index) => {
+          fileList.value.push({
+            name: index,
+            url: item,
+          });
+        });
+        loading.value = false;
+      }
+      loading.value = false;
     };
     return {
       editableTabsValue,
@@ -197,6 +280,13 @@ export default {
       fileList,
       handleStart,
       changeTab,
+      ...toRefs(imgs),
+      allImgs,
+      img1_ref,
+      img2_ref,
+      img3_ref,
+      img4_ref,
+      loading,
     };
   },
 };
@@ -248,5 +338,10 @@ export default {
   position: fixed;
   bottom: 250px;
   right: 180px;
+}
+.img-cont {
+  height: auto;
+  width: 25%;
+  display: inline-block;
 }
 </style>
