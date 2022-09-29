@@ -41,80 +41,85 @@
           :label="item.title"
           :name="item.name"
         >
-          <template v-slot>
-            <div
-              @scroll="scroll"
-              class="pane-container"
-              ref="contain"
-              v-loading="loading"
-            >
-              <div
-                class="img1-container img-cont"
-                ref="img1_ref"
-                style="width: 25%; display: inline-block"
-              >
-                <el-image
-                  :preview-src-list="allImgs"
-                  v-for="(item, index) in allImgs"
-                  :key="index"
-                  style="width: 100%"
-                  :src="item"
-                />
-              </div>
-              <div
-                class="img2-container img-cont"
-                ref="img2_ref"
-                style="width: 25%; display: inline-block"
-              >
-                <el-image
-                  v-for="(item, index) in allImgs"
-                  :key="index"
-                  style="width: 100%"
-                  :src="item"
-                />
-              </div>
-              <div
-                class="img3-container img-cont"
-                ref="img3_ref"
-                style="width: 25%; display: inline-block"
-              >
-                <el-image
-                  v-for="(item, index) in allImgs"
-                  :key="index"
-                  style="width: 100%"
-                  :src="item"
-                />
-              </div>
-              <div
-                class="img4-container img-cont"
-                ref="img4_ref"
-                style="width: 25%; display: inline-block"
-              >
-                <el-image
-                  v-for="(item, index) in allImgs"
-                  :key="index"
-                  style="width: 100%"
-                  :src="item"
-                />
-              </div>
-              <el-button
-                @click="toTop"
-                class="toTop"
-                type="primary"
-                :icon="ArrowUp"
-                circle
-              />
-              <el-button
-                @click="() => (dialogVisible2 = true)"
-                class="upload"
-                type="primary"
-                :icon="Upload"
-                circle
-              />
-            </div>
-          </template>
         </el-tab-pane>
       </el-tabs>
+      <div
+        @scroll="scroll"
+        class="pane-container"
+        ref="contain"
+        v-loading="loading"
+      >
+        <div
+          class="img1-container img-cont"
+          ref="img1_ref"
+          style="width: 25%; display: inline-block"
+        >
+          <el-image
+            :preview-src-list="allImgs"
+            :initial-index="index"
+            v-for="(item, index) in allImgs"
+            :key="index"
+            style="width: 100%"
+            :src="item"
+          />
+        </div>
+        <div
+          class="img2-container img-cont"
+          ref="img2_ref"
+          style="width: 25%; display: inline-block"
+        >
+          <el-image
+            :preview-src-list="allImgs"
+            :initial-index="index"
+            v-for="(item, index) in allImgs"
+            :key="index"
+            style="width: 100%"
+            :src="item"
+          />
+        </div>
+        <div
+          class="img3-container img-cont"
+          ref="img3_ref"
+          style="width: 25%; display: inline-block"
+        >
+          <el-image
+            :preview-src-list="allImgs"
+            :initial-index="index"
+            v-for="(item, index) in allImgs"
+            :key="index"
+            style="width: 100%"
+            :src="item"
+          />
+        </div>
+        <div
+          class="img4-container img-cont"
+          ref="img4_ref"
+          style="width: 25%; display: inline-block"
+        >
+          <el-image
+            :preview-src-list="allImgs"
+            :initial-index="index"
+            v-for="(item, index) in allImgs"
+            :key="index"
+            style="width: 100%"
+            :src="item"
+          />
+        </div>
+        <el-button
+          @click="toTop"
+          class="toTop"
+          type="primary"
+          :icon="ArrowUp"
+          circle
+        />
+        <el-button
+          @click="() => (dialogVisible2 = true)"
+          class="upload"
+          type="primary"
+          :icon="Upload"
+          circle
+        />
+      </div>
     </el-card>
   </div>
 </template>
@@ -205,15 +210,14 @@ export default {
         });
     };
     const toTop = () => {
-      contain.value[editableTabsValue.value].scrollTop = 0;
+      contain.value.scrollTop = 0;
     };
     const scroll = () => {
       // if (
-      //   contain.value[editableTabsValue.value].scrollTop +
-      //     contain.value[editableTabsValue.value].clientHeight >=
-      //   contain.value[editableTabsValue.value].scrollHeight
+      //   contain.value.scrollTop + contain.value.clientHeight + 0.4 >=
+      //   contain.value.scrollHeight
       // )
-      //   console.log(editableTabsValue.value);
+      //   alert(1);
     };
     const upload = async () => {
       let urls = "";
@@ -274,20 +278,13 @@ export default {
             name: index,
             url: item,
           });
-          // let h1 =
-          //   img1_ref.value[editableTabsValue.value].getBoundingClientRect()
-          //     .height;
-          // let h2 =
-          //   img2_ref.value[editableTabsValue.value].getBoundingClientRect()
-          //     .height;
-          // let h3 =
-          //   img3_ref.value[editableTabsValue.value].getBoundingClientRect()
-          //     .height;
-          // let h4 =
-          //   img4_ref.value[editableTabsValue.value].getBoundingClientRect()
-          //     .height;
+          console.log(img1_ref.value.style.height);
+          console.log(img1_ref.value.offsetHeight);
+          console.log(img1_ref.value.scrollHeight);
+          // let h2 = img2_ref.value.getBoundingClientRect().height;
+          // let h3 = img3_ref.value.getBoundingClientRect().height;
+          // let h4 = img4_ref.value.getBoundingClientRect().height;
           // const min = Math.min(h1, h2, h3, h4);
-          // console.log(h1);
         });
         loading.value = false;
       }
