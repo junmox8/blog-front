@@ -117,10 +117,10 @@ import { ElMessage } from "element-plus";
 export default {
   async created() {
     const result = await getAllImgKinds();
-    result.data.data.forEach((item) => {
+    result.data.data.forEach((item, index) => {
       this.editableTabs.push({
         title: item.name,
-        name: item.name,
+        name: index,
       });
     });
   },
@@ -171,13 +171,13 @@ export default {
       if (result.data.success == true) {
         const result2 = await getAllImgKinds();
         editableTabs.value = [];
-        result2.data.data.forEach((item) => {
+        result2.data.data.forEach((item, index) => {
           editableTabs.value.push({
             title: item.name,
-            name: item.name,
+            name: index,
           });
         });
-        editableTabsValue.value = input.value;
+        editableTabsValue.value = editableTabs.value.length - 1;
         ElMessage({
           type: "success",
           message: "添加分类成功",
@@ -189,17 +189,15 @@ export default {
         });
     };
     const toTop = () => {
-      // contain.value[1].scrollTop = 0;
-      contain.value.forEach((item) => {
-        item.scrollTop = 0;
-      });
+      contain.value[editableTabsValue.value].scrollTop = 0;
     };
     const scroll = () => {
       if (
-        contain.value[1].scrollTop + contain.value[1].clientHeight >=
-        contain.value[1].scrollHeight
+        contain.value[editableTabsValue.value].scrollTop +
+          contain.value[editableTabsValue.value].clientHeight >=
+        contain.value[editableTabsValue.value].scrollHeight
       )
-        console.log(1);
+        console.log(editableTabsValue.value);
     };
     const upload = async () => {
       let urls = "";
@@ -207,7 +205,10 @@ export default {
         if (index != fileList.value.length - 1) urls += item.url + ",";
         else urls += item.url;
       });
-      const result = await handUpImg(urls, editableTabsValue.value);
+      const result = await handUpImg(
+        urls,
+        editableTabs.value[editableTabsValue.value].title
+      );
       if (result.data.success == true) {
         ElMessage({
           type: "success",
@@ -216,7 +217,7 @@ export default {
         fileList.value = [];
         const {
           data: { data: data2 },
-        } = await getImgs(editableTabsValue.value);
+        } = await getImgs(editableTabs.value[editableTabsValue.value].title);
         if (data2[0] && data2[0].url) {
           allImgs.value = data2[0].url.split(",");
           allImgs.value.forEach((item, index) => {
@@ -249,7 +250,7 @@ export default {
       loading.value = true;
       const {
         data: { data: data2 },
-      } = await getImgs(name);
+      } = await getImgs(editableTabs.value[name].title);
       if (data2[0] && data2[0].url) {
         allImgs.value = data2[0].url.split(",");
         allImgs.value.forEach((item, index) => {
