@@ -54,56 +54,36 @@
           ref="img1_ref"
           style="width: 25%; display: inline-block"
         >
-          <el-image
-            :preview-src-list="allImgs"
-            :initial-index="index"
-            v-for="(item, index) in allImgs"
-            :key="index"
-            style="width: 100%"
-            :src="item"
-          />
+          <el-card shadow="hover" v-for="(item, index) in allImgs" :key="index">
+            <el-image style="width: 100%" :src="item" />
+          </el-card>
         </div>
         <div
           class="img2-container img-cont"
           ref="img2_ref"
           style="width: 25%; display: inline-block"
         >
-          <el-image
-            :preview-src-list="allImgs"
-            :initial-index="index"
-            v-for="(item, index) in allImgs"
-            :key="index"
-            style="width: 100%"
-            :src="item"
-          />
+          <el-card shadow="hover" v-for="(item, index) in allImgs" :key="index">
+            <el-image style="width: 100%" :src="item" />
+          </el-card>
         </div>
         <div
           class="img3-container img-cont"
           ref="img3_ref"
           style="width: 25%; display: inline-block"
         >
-          <el-image
-            :preview-src-list="allImgs"
-            :initial-index="index"
-            v-for="(item, index) in allImgs"
-            :key="index"
-            style="width: 100%"
-            :src="item"
-          />
+          <el-card shadow="hover" v-for="(item, index) in allImgs" :key="index">
+            <el-image style="width: 100%" :src="item" />
+          </el-card>
         </div>
         <div
           class="img4-container img-cont"
           ref="img4_ref"
           style="width: 25%; display: inline-block"
         >
-          <el-image
-            :preview-src-list="allImgs"
-            :initial-index="index"
-            v-for="(item, index) in allImgs"
-            :key="index"
-            style="width: 100%"
-            :src="item"
-          />
+          <el-card shadow="hover" v-for="(item, index) in allImgs" :key="index">
+            <el-image style="width: 100%" :src="item" />
+          </el-card>
         </div>
         <el-button
           @click="toTop"
@@ -133,7 +113,7 @@ import {
   getImgs,
 } from "../axios/service";
 import { ArrowUp, Upload } from "@element-plus/icons-vue";
-import { reactive, ref, toRefs } from "vue";
+import { reactive, ref, toRefs, nextTick } from "vue";
 import { ElMessage } from "element-plus";
 export default {
   async created() {
@@ -273,18 +253,15 @@ export default {
       } = await getImgs(editableTabs.value[name].title);
       if (data2[0] && data2[0].url) {
         allImgs.value = data2[0].url.split(",");
-        allImgs.value.forEach((item, index) => {
-          fileList.value.push({
-            name: index,
-            url: item,
+        nextTick(() => {
+          allImgs.value.forEach((item, index) => {
+            fileList.value.push({
+              name: index,
+              url: item,
+            });
+            console.log(contain.value.offsetHeight);
+            console.log(img1_ref.value.offsetHeight);
           });
-          console.log(img1_ref.value.style.height);
-          console.log(img1_ref.value.offsetHeight);
-          console.log(img1_ref.value.scrollHeight);
-          // let h2 = img2_ref.value.getBoundingClientRect().height;
-          // let h3 = img3_ref.value.getBoundingClientRect().height;
-          // let h4 = img4_ref.value.getBoundingClientRect().height;
-          // const min = Math.min(h1, h2, h3, h4);
         });
         loading.value = false;
       }
@@ -366,5 +343,10 @@ export default {
   position: fixed;
   bottom: 250px;
   right: 180px;
+}
+.el-image:hover {
+  transition: all;
+  transition-duration: 1s;
+  transform: scale(1.1);
 }
 </style>
