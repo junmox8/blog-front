@@ -54,7 +54,7 @@
           ref="img1_ref"
           style="width: 25%; display: inline-block"
         >
-          <el-card shadow="hover" v-for="(item, index) in allImgs" :key="index">
+          <el-card shadow="hover" v-for="(item, index) in img1" :key="index">
             <el-image style="width: 100%" :src="item" />
           </el-card>
         </div>
@@ -63,7 +63,7 @@
           ref="img2_ref"
           style="width: 25%; display: inline-block"
         >
-          <el-card shadow="hover" v-for="(item, index) in allImgs" :key="index">
+          <el-card shadow="hover" v-for="(item, index) in img2" :key="index">
             <el-image style="width: 100%" :src="item" />
           </el-card>
         </div>
@@ -72,7 +72,7 @@
           ref="img3_ref"
           style="width: 25%; display: inline-block"
         >
-          <el-card shadow="hover" v-for="(item, index) in allImgs" :key="index">
+          <el-card shadow="hover" v-for="(item, index) in img3" :key="index">
             <el-image style="width: 100%" :src="item" />
           </el-card>
         </div>
@@ -81,7 +81,7 @@
           ref="img4_ref"
           style="width: 25%; display: inline-block"
         >
-          <el-card shadow="hover" v-for="(item, index) in allImgs" :key="index">
+          <el-card shadow="hover" v-for="(item, index) in img4" :key="index">
             <el-image style="width: 100%" :src="item" />
           </el-card>
         </div>
@@ -247,19 +247,22 @@ export default {
     const changeTab = async (name) => {
       fileList.value = [];
       allImgs.value = [];
+      for (let i in imgs) {
+        imgs[i] = [];
+      }
       loading.value = true;
       const {
         data: { data: data2 },
       } = await getImgs(editableTabs.value[name].title);
       if (data2[0] && data2[0].url) {
         allImgs.value = data2[0].url.split(",");
-        nextTick(() => {
-          allImgs.value.forEach((item, index) => {
-            fileList.value.push({
-              name: index,
-              url: item,
-            });
-            console.log(contain.value.offsetHeight);
+        allImgs.value.forEach((item, index) => {
+          fileList.value.push({
+            name: index,
+            url: item,
+          });
+          imgs.img1.push(item);
+          nextTick(() => {
             console.log(img1_ref.value.offsetHeight);
           });
         });
