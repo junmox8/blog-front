@@ -241,7 +241,7 @@ export default {
         url: result,
       });
       fileList.value.forEach((item, index) => {
-        if (item.size) fileList.value.splice(index, 1);
+        if (item.url.includes('blob')) fileList.value.splice(index, 1);
       });
     };
     const changeTab = async (name) => {
