@@ -67,7 +67,7 @@
     </div>
     <!-- <router-view></router-view> -->
     <router-view v-slot="{ Component }">
-      <keep-alive>
+      <keep-alive :exclude="['album']">
         <component :is="Component" />
       </keep-alive>
     </router-view>

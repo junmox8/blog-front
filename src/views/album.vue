@@ -24,7 +24,7 @@
       </span>
     </template>
   </el-dialog>
-  <div class="container">
+  <div class="container" ref="container">
     <el-card class="album-container">
       <el-tabs
         @tab-change="changeTab"
@@ -43,48 +43,15 @@
         >
         </el-tab-pane>
       </el-tabs>
-      <div
-        @scroll="scroll"
-        class="pane-container"
-        ref="contain"
-        v-loading="loading"
-      >
-        <div
-          class="img1-container img-cont"
-          ref="img1_ref"
-          style="width: 25%; display: inline-block"
-        >
-          <el-card shadow="hover" v-for="(item, index) in img1" :key="index">
-            <el-image style="width: 100%" :src="item" />
-          </el-card>
-        </div>
-        <div
-          class="img2-container img-cont"
-          ref="img2_ref"
-          style="width: 25%; display: inline-block"
-        >
-          <el-card shadow="hover" v-for="(item, index) in img2" :key="index">
-            <el-image style="width: 100%" :src="item" />
-          </el-card>
-        </div>
-        <div
-          class="img3-container img-cont"
-          ref="img3_ref"
-          style="width: 25%; display: inline-block"
-        >
-          <el-card shadow="hover" v-for="(item, index) in img3" :key="index">
-            <el-image style="width: 100%" :src="item" />
-          </el-card>
-        </div>
-        <div
-          class="img4-container img-cont"
-          ref="img4_ref"
-          style="width: 25%; display: inline-block"
-        >
-          <el-card shadow="hover" v-for="(item, index) in img4" :key="index">
-            <el-image style="width: 100%" :src="item" />
-          </el-card>
-        </div>
+      <div class="pane-container" ref="contain" v-loading="loading">
+        <el-card shadow="hover" v-for="(item, index) in img1" :key="index">
+          <el-image
+            style="width: 100%"
+            src="http://huangjunyi-1310688513.cos.ap-shanghai.myqcloud.com/articleCover/1665674842513"
+            :dataUrl="item"
+            ref="imgsRef"
+          />
+        </el-card>
         <el-button
           @click="toTop"
           class="toTop"
@@ -113,9 +80,10 @@ import {
   getImgs,
 } from "../axios/service";
 import { ArrowUp, Upload } from "@element-plus/icons-vue";
-import { reactive, ref, toRefs, nextTick } from "vue";
+import { reactive, ref, toRefs, nextTick, onMounted } from "vue";
 import { ElMessage } from "element-plus";
 export default {
+  name: "album",
   async created() {
     const result = await getAllImgKinds();
     result.data.data.forEach((item, index) => {
@@ -125,6 +93,12 @@ export default {
       });
     });
   },
+  mounted() {
+    window.addEventListener("scroll", this.scroll, true);
+  },
+  beforeUnmount() {
+    window.removeEventListener("scroll", this.scroll, true);
+  },
   setup() {
     const editableTabsValue = ref("0");
     const editableTabs = ref([]);
@@ -132,19 +106,19 @@ export default {
     const dialogVisible2 = ref(false);
     const input = ref("");
     const contain = ref(null);
+    const container = ref(null);
     const fileList = ref([]);
     const allImgs = ref([]);
     const loading = ref(false);
+    const imgsRef = ref([]);
     const imgs = reactive({
       img1: [],
-      img2: [],
-      img3: [],
-      img4: [],
     });
-    const img1_ref = ref(null);
-    const img2_ref = ref(null);
-    const img3_ref = ref(null);
-    const img4_ref = ref(null);
+    onMounted(() => {
+      // imgsRef.value.forEach((item) => {
+      //   console.log(item.getBoundingClientRect());
+      // });
+    });
     const handleTabsEdit = (targetName, action) => {
       if (action === "add") {
         dialogVisible.value = true;
@@ -190,14 +164,11 @@ export default {
         });
     };
     const toTop = () => {
-      contain.value.scrollTop = 0;
-    };
-    const scroll = () => {
-      // if (
-      //   contain.value.scrollTop + contain.value.clientHeight + 0.4 >=
-      //   contain.value.scrollHeight
-      // )
-      //   alert(1);
+      imgsRef.value.forEach((item, index) => {
+        if (index == 7)
+          console.log(item.$refs.container.getAttribute("dataUrl"));
+        // console.log(item.$refs.container.getBoundingClientRect());
+      });
     };
     const upload = async () => {
       let urls = "";
@@ -215,6 +186,7 @@ export default {
           message: "该分类更新图片成功",
         });
         fileList.value = [];
+        imgs.img1 = [];
         const {
           data: { data: data2 },
         } = await getImgs(editableTabs.value[editableTabsValue.value].title);
@@ -225,6 +197,7 @@ export default {
               name: index,
               url: item,
             });
+            imgs.img1.push(item);
           });
         } else allImgs.value = [];
       } else
@@ -262,13 +235,13 @@ export default {
             url: item,
           });
           imgs.img1.push(item);
-          nextTick(() => {
-            console.log(img1_ref.value.offsetHeight);
-          });
         });
         loading.value = false;
       }
       loading.value = false;
+    };
+    const scroll = () => {
+      console.log(1);
     };
     return {
       editableTabsValue,
@@ -283,18 +256,16 @@ export default {
       ArrowUp,
       Upload,
       toTop,
-      scroll,
       upload,
       fileList,
       handleStart,
       changeTab,
       ...toRefs(imgs),
       allImgs,
-      img1_ref,
-      img2_ref,
-      img3_ref,
-      img4_ref,
       loading,
+      container,
+      imgsRef,
+      scroll,
     };
   },
 };
@@ -315,7 +286,8 @@ export default {
   margin-top: 59px;
   margin-left: 10%;
   margin-bottom: 50px;
-  height: 500px;
+  height: auto;
+  min-height: 100vh;
   animation-name: container;
   animation-duration: 2s;
 }
@@ -330,12 +302,18 @@ export default {
   }
 }
 .pane-container {
-  height: 400px;
+  height: auto;
   width: 100%;
-  overflow: scroll;
+  overflow: scroll !important;
   overflow-x: hidden;
   overflow-y: scroll;
   position: relative;
+  column-count: 4;
+  column-gap: 10px;
+  column-fill: auto;
+}
+.pane-container::after {
+  clear: both;
 }
 .toTop {
   position: fixed;
@@ -351,5 +329,8 @@ export default {
   transition: all;
   transition-duration: 1s;
   transform: scale(1.1);
+}
+.el-card {
+  break-inside: avoid;
 }
 </style>
