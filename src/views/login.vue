@@ -100,7 +100,6 @@ import { useRouter } from "vue-router";
 import { register as userRegister, login as userLogin } from "../axios/service";
 import { ref, reactive, onMounted } from "vue";
 export default {
-  mounted() {},
   setup() {
     const store = useStore();
     const router = useRouter();

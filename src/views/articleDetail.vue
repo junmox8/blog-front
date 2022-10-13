@@ -104,6 +104,7 @@ import {
 } from "../axios/service";
 import { ElMessage } from "element-plus";
 import comment from "../components/comment.vue";
+import dayjs from "dayjs";
 export default {
   components: {
     comment,
@@ -115,6 +116,13 @@ export default {
       (this.time = data.data.createdAt.substring(0, 10));
     this.articleId = this.$route.query.id;
     const result = await getAllContent(this.$route.query.id, 1);
+    result.data.data.forEach((item) => {
+      item.createdAt = dayjs(
+        dayjs(
+          item.createdAt.replace(/T/g, " ").replace(/.[\d]{3}Z/, " ")
+        ).valueOf() + 28800000
+      ).format("YYYY-MM-DD HH:mm:ss");
+    });
     this.commentArr = result.data.data;
     const result2 = await getCommentNumber(this.$route.query.id);
     this.number = result2.data.data;
@@ -160,6 +168,13 @@ export default {
       commentArr.value = [];
       currentPage.value = page;
       const result = await getAllContent(route.query.id, page);
+      result.data.data.forEach((item) => {
+        item.createdAt = dayjs(
+          dayjs(
+            item.createdAt.replace(/T/g, " ").replace(/.[\d]{3}Z/, " ")
+          ).valueOf() + 28800000
+        ).format("YYYY-MM-DD HH:mm:ss");
+      });
       commentArr.value = result.data.data;
     };
     return {

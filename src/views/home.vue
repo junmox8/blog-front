@@ -76,9 +76,12 @@
 
 <script>
 import love from "../utils/createLove";
+import { onMounted } from "vue";
 export default {
-  mounted() {
-    love();
+  setup() {
+    onMounted(() => {
+      love();
+    });
   },
 };
 </script>

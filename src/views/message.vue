@@ -34,21 +34,126 @@
           >提交</el-button
         >
       </div>
+      <div class="message-content">
+        <el-skeleton :rows="8" v-if="messageArr.length == 0 && number != 0" />
+        <message
+          v-for="(item, index) in messageArr"
+          :key="index"
+          :content="item.content"
+          :time="item.createdAt"
+          :avatar="item.User.avatar"
+          :name="item.User.name"
+          :index="index"
+          :id="item.id"
+          :userId="item.userId"
+          :page="currentPage"
+        ></message>
+      </div>
+      <div
+        style="
+          display: flex;
+          justify-content: center;
+          margin-bottom: 50px;
+          margin-top: 30px;
+        "
+      >
+        <el-pagination
+          background
+          :page-size="5"
+          layout="prev, pager, next"
+          :total="number"
+          @current-change="changePage"
+          :current-page="currentPage"
+        />
+      </div>
     </el-card>
   </div>
 </template>
 
 <script>
+import message from "../components/message.vue";
+import { ElMessage } from "element-plus";
+import {
+  handUpMessage,
+  getAllMessageNumber,
+  getOnePageMessage,
+} from "../axios/service";
+import dayjs from "dayjs";
 import { ref, toRefs, onMounted } from "vue";
 export default {
+  async created() {
+    const {
+      data: { data: length },
+    } = await getAllMessageNumber();
+    this.number = length;
+    const result = await getOnePageMessage(1);
+    result.data.data.forEach((item) => {
+      item.createdAt = dayjs(
+        dayjs(
+          item.createdAt.replace(/T/g, " ").replace(/.[\d]{3}Z/, " ")
+        ).valueOf() + 28800000
+      ).format("YYYY-MM-DD HH:mm:ss");
+    });
+    this.messageArr = result.data.data;
+  },
+  components: {
+    message,
+  },
   setup() {
     const text = ref(null);
     const textarea = ref("");
-    const handupComment = async () => {};
+    const number = ref(0);
+    const currentPage = ref(1);
+    const messageArr = ref([]);
+    const handupComment = async () => {
+      if (textarea.value.length == 0)
+        return ElMessage({
+          message: "请填写内容",
+          type: "error",
+        });
+      const result = await handUpMessage(textarea.value);
+      if (result.data.success == true) {
+        ElMessage({
+          message: "提交留言成功",
+          type: "success",
+        });
+        const result2 = await getOnePageMessage(currentPage.value);
+        result2.data.data.forEach((item) => {
+          item.createdAt = dayjs(
+            dayjs(
+              item.createdAt.replace(/T/g, " ").replace(/.[\d]{3}Z/, " ")
+            ).valueOf() + 28800000
+          ).format("YYYY-MM-DD HH:mm:ss");
+        });
+        messageArr.value = result2.data.data;
+        number.value++;
+      } else
+        ElMessage({
+          message: result.data.errorMsg,
+          type: "error",
+        });
+    };
+    const changePage = async (page) => {
+      messageArr.value = [];
+      currentPage.value = page;
+      const result = await getOnePageMessage(page);
+      result.data.data.forEach((item) => {
+        item.createdAt = dayjs(
+          dayjs(
+            item.createdAt.replace(/T/g, " ").replace(/.[\d]{3}Z/, " ")
+          ).valueOf() + 28800000
+        ).format("YYYY-MM-DD HH:mm:ss");
+      });
+      messageArr.value = result.data.data;
+    };
     return {
       text,
       textarea,
+      number,
+      currentPage,
+      messageArr,
       handupComment,
+      changePage,
     };
   },
 };
@@ -66,7 +171,7 @@ export default {
 .message-always {
   width: 80%;
   margin-left: 10%;
-  height: 800px;
+  height: auto;
   margin-bottom: 50px;
   margin-top: 50px;
 }
@@ -101,5 +206,11 @@ export default {
   to {
     left: -100%;
   }
+}
+.message-content {
+  width: 90%;
+  margin-left: 5%;
+  height: auto;
+  min-height: 400px;
 }
 </style>

@@ -42,7 +42,7 @@
         </div>
         <el-input
           v-if="isEdit == true"
-          v-model="name"
+          v-model="name2"
           placeholder="请输入"
           clearable
           style="margin-left: 20px; max-width: 40%"
@@ -71,7 +71,7 @@
         </div>
         <el-input
           v-if="isEdit == true"
-          v-model="introduction"
+          v-model="introduction2"
           placeholder="请输入"
           clearable
           style="margin-left: 20px; max-width: 40%"
@@ -100,7 +100,7 @@
         "
       >
         <el-button type="primary" @click="save">保存</el-button>
-        <el-button @click="isEdit = false" style="margin-left: 5%"
+        <el-button @click="cancelEdit" style="margin-left: 5%"
           >取消编辑</el-button
         >
       </div>
@@ -123,6 +123,8 @@ export default {
     } = await getMyUserInfo();
     this.name = name;
     this.avatar = avatar;
+    this.name2 = name;
+    this.introduction2 = introduction;
     this.introduction = introduction;
   },
   setup() {
@@ -131,7 +133,10 @@ export default {
       avatar: "",
       introduction: "",
     });
-
+    const edit = reactive({
+      name2: "",
+      introduction2: "",
+    });
     const isEdit = ref(false);
     const router = useRouter();
     const exit = async () => {
@@ -140,21 +145,37 @@ export default {
     };
     const save = async () => {
       const { name, avatar, introduction } = userInfo;
-      const result = await updateUserInfo(name, avatar, introduction);
-      if (result) ElMessage({ type: "success", message: "更改信息成功" });
-      else ElMessage({ type: "error", message: "更改信息失败" });
+      const { name2, introduction2 } = edit;
+      const result = await updateUserInfo(name2, avatar, introduction2);
+      if (result) {
+        ElMessage({ type: "success", message: "更改信息成功" });
+        const {
+          data: {
+            data: { name, avatar, introduction },
+          },
+        } = await getMyUserInfo();
+        userInfo.name = name;
+        userInfo.introduction = introduction;
+      } else ElMessage({ type: "error", message: "更改信息失败" });
       isEdit.value = false;
     };
     const handleStart = async (file) => {
       const result = await uploadFile(file.file, file.file.uid);
       userInfo.avatar = result;
     };
+    const cancelEdit = () => {
+      isEdit.value = false;
+      edit.name2 = userInfo.name;
+      edit.introduction2 = userInfo.introduction;
+    };
     return {
       ...toRefs(userInfo),
+      ...toRefs(edit),
       exit,
       save,
       isEdit,
       handleStart,
+      cancelEdit,
     };
   },
 };

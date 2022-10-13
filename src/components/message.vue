@@ -1,7 +1,7 @@
 <template>
   <el-dialog v-model="dialogFormVisible" title="添加评论">
     <el-input
-      v-model="comment"
+      v-model="message"
       :autosize="{ minRows: 2 }"
       type="textarea"
       placeholder="请输入评论"
@@ -11,19 +11,19 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="handUpComment">确认</el-button>
+        <el-button type="primary" @click="handUpMessage">确认</el-button>
       </span>
     </template>
   </el-dialog>
-  <div class="comment-container">
-    <div class="comment-container-avatar">
+  <div class="message-container">
+    <div class="message-container-avatar">
       <img
         :src="avatar"
         alt=""
         style="width: 100%; height: 100%; border-radius: 50%"
       />
     </div>
-    <div class="comment-container-name">{{ name }}</div>
+    <div class="message-container-name">{{ name }}</div>
     <div
       style="
         position: absolute;
@@ -34,60 +34,50 @@
         flex-wrap: nowrap;
       "
     >
-      <div class="comment-container-lou">
+      <div class="message-container-lou">
         {{ (page - 1) * 5 + index + 1 }}楼
       </div>
-      <div class="comment-container-time">{{ time_tr }}</div>
+      <div class="message-container-time">{{ time_tr }}</div>
     </div>
-    <div class="comment-content-container">
-      <div class="comment-container-content">
+    <div class="message-content-container">
+      <div class="message-container-content">
         {{ content }}
       </div>
       <div @click="() => (dialogFormVisible = true)" class="responceText">
         回复
       </div>
     </div>
-    <commentAttach
+    <messageAttach
       @resend="resend"
-      v-for="(item, index) in commentAttach"
+      v-for="(item, index) in messageAttach"
       :key="index"
       :fromUserId="item.fromUserId"
       :toUserId="item.toUserId"
       :time="item.createdAt"
       :content="item.content"
       :id="item.id"
-      :commentId="item.commentId"
-    ></commentAttach>
+      :messageId="item.messageId"
+    ></messageAttach>
   </div>
 </template>
 
 <script>
-import { handUpCommentAttach, getTheCommentAttach } from "../axios/service";
+import { handUpMessageAttach, getTheMessageAttach } from "../axios/service";
 import { ref } from "vue";
-import commentAttach from "./commentAttach.vue";
+import messageAttach from "./messageAttach.vue";
 import dayjs from "dayjs";
 import { ElMessage } from "element-plus";
 export default {
   components: {
-    commentAttach,
+    messageAttach,
   },
-  props: [
-    "content",
-    "time",
-    "avatar",
-    "name",
-    "index",
-    "articleId",
-    "userId",
-    "id",
-    "page",
-  ],
+  props: ["content", "time", "avatar", "name", "index", "userId", "id", "page"],
   async created() {
     this.time_tr = this.time
       .replace(/T/g, " ")
       .replace(/.[\d]{3}Z/, " ")
       .substring(0, 19);
-    const result = await getTheCommentAttach(this.id);
+    const result = await getTheMessageAttach(this.id);
     result.data.data.forEach((item) => {
       item.createdAt = dayjs(
         dayjs(
@@ -95,42 +85,48 @@ export default {
         ).valueOf() + 28800000
       ).format("YYYY-MM-DD HH:mm:ss");
     });
-    this.commentAttach = result.data.data;
+    this.messageAttach = result.data.data;
   },
   setup(props) {
     const time_tr = ref("");
     const dialogFormVisible = ref(false);
-    const comment = ref("");
-    const commentAttach = ref([]);
-    const handUpComment = async () => {
-      const result = await handUpCommentAttach(
-        props.userId,
-        props.id,
-        comment.value
-      );
-      if (result) {
-        ElMessage.success({
-          type: "success",
-          message: "回复成功",
-        });
-        const result2 = await getTheCommentAttach(props.id);
-        result2.data.data.forEach((item) => {
-          item.createdAt = dayjs(
-            dayjs(
-              item.createdAt.replace(/T/g, " ").replace(/.[\d]{3}Z/, " ")
-            ).valueOf() + 28800000
-          ).format("YYYY-MM-DD HH:mm:ss");
-        });
-        commentAttach.value = result2.data.data;
+    const message = ref("");
+    const messageAttach = ref([]);
+    const handUpMessage = async () => {
+      if (message.value.length > 0) {
+        const result = await handUpMessageAttach(
+          message.value,
+          props.userId,
+          props.id
+        );
+        if (result) {
+          ElMessage.success({
+            type: "success",
+            message: "回复成功",
+          });
+          const result2 = await getTheMessageAttach(props.id);
+          result2.data.data.forEach((item) => {
+            item.createdAt = dayjs(
+              dayjs(
+                item.createdAt.replace(/T/g, " ").replace(/.[\d]{3}Z/, " ")
+              ).valueOf() + 28800000
+            ).format("YYYY-MM-DD HH:mm:ss");
+          });
+          messageAttach.value = result2.data.data;
+        } else
+          ElMessage.error({
+            type: "error",
+            message: "回复失败,请稍后重试",
+          });
+        dialogFormVisible.value = false;
       } else
         ElMessage.error({
           type: "error",
-          message: "回复失败,请稍后重试",
+          message: "请填写内容",
         });
-      dialogFormVisible.value = false;
     };
     const resend = async (data) => {
-      const result = await getTheCommentAttach(props.id);
+      const result = await getTheMessageAttach(props.id);
       result.data.data.forEach((item) => {
         item.createdAt = dayjs(
           dayjs(
@@ -138,14 +134,14 @@ export default {
           ).valueOf() + 28800000
         ).format("YYYY-MM-DD HH:mm:ss");
       });
-      commentAttach.value = result.data.data;
+      messageAttach.value = result.data.data;
     };
     return {
       time_tr,
       dialogFormVisible,
-      comment,
-      commentAttach,
-      handUpComment,
+      message,
+      messageAttach,
+      handUpMessage,
       resend,
     };
   },
@@ -153,7 +149,7 @@ export default {
 </script>
 
 <style>
-.comment-container {
+.message-container {
   width: 100%;
   min-height: 60px;
   height: auto;
@@ -162,9 +158,10 @@ export default {
   border-bottom-style: solid;
   border-bottom-width: 1px;
   border-bottom-color: #c4c3c4;
+  border-collapse: separate;
   overflow: hidden;
 }
-.comment-container-avatar {
+.message-container-avatar {
   width: 30px;
   height: 30px;
   border-radius: 50%;
@@ -172,7 +169,7 @@ export default {
   left: 2.5%;
   top: 6px;
 }
-.comment-container-name {
+.message-container-name {
   width: auto;
   max-width: 60%;
   overflow: hidden;
@@ -185,10 +182,10 @@ export default {
   font-size: 14px;
   font-weight: 600;
 }
-.comment-container-time {
+.message-container-time {
   margin-left: 10px;
 }
-.comment-content-container {
+.message-content-container {
   width: calc(97.5% - 35px);
   margin-left: calc(2.5% + 35px);
   height: auto;
@@ -197,7 +194,7 @@ export default {
   position: relative;
   margin-bottom: 5px;
 }
-.comment-container-content {
+.message-container-content {
   width: auto;
   max-width: 80%;
   word-break: break-all;
@@ -211,7 +208,7 @@ export default {
   font-size: 12px;
   color: #8fc4f7;
 }
-.commentAttach:nth-last-child(1) {
+.messageAttach:nth-last-child(1) {
   border-style: hidden;
 }
 </style>

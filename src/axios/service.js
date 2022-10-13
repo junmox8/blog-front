@@ -108,3 +108,35 @@ export const handUpImg = async (urls, kindName) => {
 export const getImgs = async (kindName) => {
   return Axios.get("/api/album/getImgs?kindName=" + kindName);
 };
+export const handUpMessage = async (content) => {
+  return Axios.post("/api/message/handUpMessage", {
+    content,
+  });
+};
+export const getAllMessageNumber = async () => {
+  return Axios.get("/api/message/getAllMessageNumber");
+};
+export const getOnePageMessage = async (page) => {
+  return Axios.get("/api/message/getOnePageMessage?page=" + page);
+};
+export const handUpMessageAttach = async (content, toUserId, messageId) => {
+  return Axios.post("/api/message/handUpMessageAttach", {
+    content,
+    messageId,
+    toUserId,
+  });
+};
+export const getTheMessageAttach = async (contentId) => {
+  return Axios.get("/api/message/getTheMessageAttach?id=" + contentId);
+};
+export const handUpMessageAttachAttach = async (
+  content,
+  toUserId,
+  messageId
+) => {
+  return Axios.post("/api/message/handUpMessageAttachAttach", {
+    content,
+    messageId,
+    toUserId,
+  });
+};
