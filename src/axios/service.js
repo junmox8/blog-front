@@ -140,3 +140,8 @@ export const handUpMessageAttachAttach = async (
     toUserId,
   });
 };
+export const addPageViews = async (articleId) => {
+  return Axios.post("/api/article/addPageViews", {
+    articleId,
+  });
+};

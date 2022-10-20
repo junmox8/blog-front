@@ -45,7 +45,8 @@
       </el-tabs>
       <div class="pane-container" ref="contain" v-loading="loading">
         <el-card shadow="hover" v-for="(item, index) in img1" :key="index">
-          <el-image
+          <img
+            class="el-image"
             style="width: 100%"
             src="http://huangjunyi-1310688513.cos.ap-shanghai.myqcloud.com/articleCover/1665674842513"
             :dataUrl="item"
@@ -53,13 +54,7 @@
           />
         </el-card>
         <el-button
-          @click="toTop"
-          class="toTop"
-          type="primary"
-          :icon="ArrowUp"
-          circle
-        />
-        <el-button
+          v-if="editableTabs.length > 0"
           @click="() => (dialogVisible2 = true)"
           class="upload"
           type="primary"
@@ -95,6 +90,7 @@ export default {
   },
   mounted() {
     window.addEventListener("scroll", this.scroll, true);
+    // window.onscroll = this.scroll;//
   },
   beforeUnmount() {
     window.removeEventListener("scroll", this.scroll, true);
@@ -162,13 +158,6 @@ export default {
           type: "error",
           message: result.data.errorMsg,
         });
-    };
-    const toTop = () => {
-      imgsRef.value.forEach((item, index) => {
-        if (index == 7)
-          console.log(item.$refs.container.getAttribute("dataUrl"));
-        // console.log(item.$refs.container.getBoundingClientRect());
-      });
     };
     const upload = async () => {
       let urls = "";
@@ -241,7 +230,22 @@ export default {
       loading.value = false;
     };
     const scroll = () => {
-      console.log(1);
+      // let time = null;
+      // return () => {
+      //   if (!time) {
+      //     console.log(1);
+      //     time = setTimeout(() => {}, 1000);
+      //   }
+      //   console.log(2);
+      // };
+      imgsRef.value.forEach((item, index) => {
+        if (
+          item.getBoundingClientRect().top > 0 &&
+          item.getBoundingClientRect().top <
+            window.document.body.clientHeight - 600
+        )
+          item.src = item.getAttribute("dataUrl");
+      });
     };
     return {
       editableTabsValue,
@@ -255,7 +259,6 @@ export default {
       addFenlei,
       ArrowUp,
       Upload,
-      toTop,
       upload,
       fileList,
       handleStart,
@@ -315,11 +318,7 @@ export default {
 .pane-container::after {
   clear: both;
 }
-.toTop {
-  position: fixed;
-  bottom: 200px;
-  right: 180px;
-}
+
 .upload {
   position: fixed;
   bottom: 250px;

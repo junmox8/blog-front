@@ -150,6 +150,7 @@ import Article from "../components/article.vue";
 import Article2 from "../components/recentArticle.vue";
 import { useRouter } from "vue-router";
 export default {
+  name: "admin",
   components: {
     Article,
     Loading: defineAsyncComponent(() => import("../components/loading.vue")),

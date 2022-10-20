@@ -7,6 +7,8 @@ import "element-plus/dist/index.css";
 import store from "./store";
 import "./assets/iconfont.css";
 import "./assets/iconfont2.css";
+import VMdPreview from "@kangc/v-md-editor/lib/preview";
+import "@kangc/v-md-editor/lib/style/preview.css";
 import VMdEditor from "@kangc/v-md-editor";
 import "@kangc/v-md-editor/lib/style/base-editor.css";
 import githubTheme from "@kangc/v-md-editor/lib/theme/github.js";
@@ -21,6 +23,9 @@ import createCopyCodePlugin from "@kangc/v-md-editor/lib/plugins/copy-code/index
 import "@kangc/v-md-editor/lib/plugins/copy-code/copy-code.css";
 import "@kangc/v-md-editor/lib/theme/style/github.css";
 import hljs from "highlight.js";
+VMdPreview.use(githubTheme, {
+  Hljs: hljs,
+});
 VMdEditor.use(githubTheme, {
   Hljs: hljs,
 })
@@ -30,7 +35,13 @@ VMdEditor.use(githubTheme, {
   .use(createLineNumbertPlugin())
   .use(createCopyCodePlugin());
 const app = createApp(App);
-app.use(store).use(router).use(ElementPlus).use(VMdEditor).mount("#app");
+app
+  .use(store)
+  .use(router)
+  .use(ElementPlus)
+  .use(VMdEditor)
+  .use(VMdPreview)
+  .mount("#app");
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component);
 }

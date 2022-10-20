@@ -1,5 +1,5 @@
 <template>
-  <div style="container">
+  <div style="container" ref="container">
     <div class="articleDetail-title">
       <div style="width: auto; max-width: 60%; height: auto">
         <div
@@ -37,13 +37,50 @@
         </div>
       </div>
     </div>
-    <el-card style="width: 80%; margin-left: 10%; margin-bottom: 100px">
-      <v-md-editor :model-value="content" mode="preview"></v-md-editor>
-    </el-card>
+    <div
+      style="
+        width: 100%;
+        height: auto;
+        margin-bottom: 100px;
+        display: flex;
+        flex-wrap: nowrap;
+      "
+    >
+      <el-card style="width: 60%; margin-left: 10%">
+        <v-md-editor
+          :model-value="content"
+          mode="preview"
+          ref="preview"
+        ></v-md-editor>
+        <!-- <v-md-preview :text="content" ref="preview" /> -->
+      </el-card>
+      <el-card
+        ref="mulu"
+        style="
+          width: 20%;
+          margin-left: 2%;
+          height: 100px;
+          position: fixed;
+          top: 200px;
+          left: 1000px;
+          transition: all;
+          transition-duration: 1s;
+        "
+      >
+        <div
+          v-for="(anchor, index) in titles"
+          :key="index"
+          :style="{ padding: `10px 0 10px ${anchor.indent * 20}px` }"
+          @click="handleAnchorClick(anchor)"
+        >
+          <a style="cursor: pointer">{{ anchor.title }}</a>
+        </div>
+      </el-card>
+    </div>
     <div
       style="
         width: 60%;
-        margin-left: 25%;
+        margin-left: 10%;
         height: 50px;
         margin-bottom: 100px;
         display: flex;
@@ -101,6 +138,7 @@ import {
   handUpComment,
   getAllContent,
   getCommentNumber,
+  addPageViews,
 } from "../axios/service";
 import { ElMessage } from "element-plus";
 import comment from "../components/comment.vue";
@@ -109,6 +147,7 @@ export default {
   components: {
     comment,
   },
+  name: "articleDetail",
   async created() {
     const { data } = await getArticleById(this.$route.query.id);
     (this.title = data.data.title),
@@ -126,6 +165,63 @@ export default {
     this.commentArr = result.data.data;
     const result2 = await getCommentNumber(this.$route.query.id);
     this.number = result2.data.data;
+    const result3 = await addPageViews(this.$route.query.id);
+    if (result3.data.success != true) {
+      ElMessage({
+        message: result.data.errorMsg,
+        type: "error",
+      });
+    }
+  },
+  mounted() {
+    window.document.body.onscroll = () => {
+      if (window.document.documentElement.scrollTop > 260)
+        this.$refs.mulu.$el.style.opacity = 1;
+      if (window.document.documentElement.scrollTop <= 260)
+        this.$refs.mulu.$el.style.opacity = 0;
+    };
+
+    let anchors = this.$refs.preview.$el.querySelectorAll("h1,h2,h3,h4,h5,h6");
+    console.log(anchors);
+    const titles = Array.from(anchors).filter(
+      (title) => !!title.innerText.trim()
+    );
+
+    if (!titles.length) {
+      this.titles = [];
+      return;
+    }
+
+    const hTags = Array.from(
+      new Set(titles.map((title) => title.tagName))
+    ).sort();
+
+    this.titles = titles.map((el) => ({
+      title: el.innerText,
+      lineIndex: el.getAttribute("data-v-md-line"),
+      indent: hTags.indexOf(el.tagName),
+    }));
+  },
+  data() {
+    return {
+      titles: [],
+    };
+  },
+  methods: {
+    handleAnchorClick(anchor) {
+      const { preview } = this.$refs;
+      const { lineIndex } = anchor;
+      const heading = preview.$el.querySelector(
+        `[data-v-md-line="${lineIndex}"]`
+      );
+      if (heading) {
+        preview.scrollToTarget({
+          target: heading,
+          scrollContainer: window,
+          top: 60,
+        });
+      }
+    },
   },
   setup(props) {
     const route = useRoute();
@@ -201,7 +297,7 @@ export default {
   position: relative;
   transition: all;
   transition-duration: 2s;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 .articleDetail-title {
   width: 100%;
@@ -211,8 +307,8 @@ export default {
   align-items: center;
 }
 .comment-area {
-  width: 80%;
-  margin-left: 10%;
+  width: 60%;
+  margin-left: 8.5%;
   height: auto;
   margin-bottom: 100px;
 }
