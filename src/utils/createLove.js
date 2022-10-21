@@ -49,7 +49,7 @@ export default function love() {
     }
     function attachEvent() {
       var old = typeof window.onclick === "function" && window.onclick;
-      window.onclick = function (event) {
+      window.onclick = (event) => {
         old && old();
         createHeart(event);
       };

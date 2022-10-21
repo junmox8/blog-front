@@ -180,6 +180,7 @@ export default {
       { name: "css" },
       { name: "nginx" },
       { name: "云服务" },
+      { name: "nextjs" },
     ]);
     const changePage = async (n) => {
       const result = await getArticleList(n);
@@ -203,6 +204,7 @@ export default {
 
 <style scoped>
 .container {
+  min-width: 1388px;
   width: 100%;
   height: auto;
   margin-top: 30px;

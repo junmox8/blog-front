@@ -91,7 +91,7 @@ export default {
   width: 100%;
   min-height: 100vh;
   height: auto;
-  min-width: 1162px;
+  min-width: 1388px;
   overflow: hidden;
 }
 .text {

@@ -198,6 +198,7 @@ export default {
 
 <style scoped>
 .container {
+  min-width: 1288px;
   margin-top: 59px;
   width: 100%;
   min-height: 90vh;

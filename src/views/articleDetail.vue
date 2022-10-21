@@ -289,6 +289,7 @@ export default {
 
 <style>
 .container {
+  min-width: 1288px;
   width: 100%;
   height: auto;
   margin-top: 59px;

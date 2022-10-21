@@ -43,7 +43,24 @@
         >
         </el-tab-pane>
       </el-tabs>
-      <div class="pane-container" ref="contain" v-loading="loading">
+      <div
+        :class="[
+          editableTabs.length == 0 ? 'pane-container2' : 'pane-container',
+        ]"
+        ref="contain"
+        v-loading="loading"
+      >
+        <div
+          :style="{
+            display: editableTabs.length == 0 ? 'block' : 'none',
+            position: 'absolute',
+            top: '0px',
+            width: '100%',
+            height: '100%',
+          }"
+        >
+          <el-empty style="margin: 0 auto" description="暂无图片分类" />
+        </div>
         <el-card shadow="hover" v-for="(item, index) in img1" :key="index">
           <img
             class="el-image"
@@ -87,6 +104,25 @@ export default {
         name: index,
       });
     });
+    if (this.editableTabs.length != 0) {
+      this.loading = true;
+      this.editableTabsValue = this.editableTabs[0].name;
+      const {
+        data: { data: data2 },
+      } = await getImgs(this.editableTabs[0].title);
+      if (data2[0] && data2[0].url) {
+        this.allImgs = data2[0].url.split(",");
+        this.allImgs.forEach((item, index) => {
+          this.fileList.push({
+            name: index,
+            url: item,
+          });
+          this.img1.push(item);
+        });
+        this.loading = false;
+      }
+      this.loading = false;
+    }
   },
   mounted() {
     window.addEventListener("scroll", this.scroll, true);
@@ -230,19 +266,10 @@ export default {
       loading.value = false;
     };
     const scroll = () => {
-      // let time = null;
-      // return () => {
-      //   if (!time) {
-      //     console.log(1);
-      //     time = setTimeout(() => {}, 1000);
-      //   }
-      //   console.log(2);
-      // };
       imgsRef.value.forEach((item, index) => {
         if (
           item.getBoundingClientRect().top > 0 &&
-          item.getBoundingClientRect().top <
-            window.document.body.clientHeight - 600
+          item.getBoundingClientRect().top < window.document.body.clientHeight
         )
           item.src = item.getAttribute("dataUrl");
       });
@@ -276,6 +303,7 @@ export default {
 
 <style scoped>
 .container {
+  min-width: 1288px;
   margin-top: 30px;
   width: 100%;
   min-height: 82vh;
@@ -314,6 +342,11 @@ export default {
   column-count: 4;
   column-gap: 10px;
   column-fill: auto;
+}
+.pane-container2 {
+  height: 100vh;
+  width: 100%;
+  position: relative;
 }
 .pane-container::after {
   clear: both;
