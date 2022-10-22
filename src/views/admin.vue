@@ -66,7 +66,12 @@
             <el-icon><More /></el-icon>
             <div style="margin-left: 2%">分类</div>
           </div>
-          <div class="container-title-right">more</div>
+          <div
+            class="container-title-right"
+            @click="() => router.push('/home/more')"
+          >
+            more
+          </div>
         </div>
         <div class="catalogue-content">
           <el-tag
@@ -89,7 +94,12 @@
             <el-icon><Clock /></el-icon>
             <div style="margin-left: 2%">最近文章</div>
           </div>
-          <div class="container-title-right">more</div>
+          <div
+            class="container-title-right"
+            @click="() => router.push('/home/more')"
+          >
+            more
+          </div>
         </div>
         <div class="recent-article-main">
           <Article2
@@ -167,6 +177,7 @@ export default {
     const result = await getAllArticleNumber();
     this.articleNumber = result.data.data;
     const result2 = await getArticleList(1);
+    console.log(result2.data.data);
     this.articleList = result2.data.data;
     const result3 = await getRecentArticle();
     this.recentArticle = result3.data.data;
@@ -204,6 +215,7 @@ export default {
       tagType,
       recentArticle,
       store,
+      router,
       changePage,
       jumpToArticleDetail,
     };

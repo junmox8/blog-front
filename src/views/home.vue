@@ -186,7 +186,7 @@ export default {
   width: 40px !important;
   height: 40px !important;
   outline: none;
-  margin-left: 8%;
+  margin-left: 80px;
   margin-top: 8px;
   animation-name: asd;
   animation-duration: 2s;
