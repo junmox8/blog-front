@@ -1,5 +1,11 @@
 <template>
-  <div style="container" ref="container">
+  <div
+    style="container"
+    ref="container"
+    :style="{
+      backgroundImage: 'url(' + store.state.Background.cover + ')',
+    }"
+  >
     <div class="articleDetail-title">
       <div style="width: auto; max-width: 60%; height: auto">
         <div
@@ -117,7 +123,7 @@
         :page="currentPage"
       ></comment>
     </div>
-    <div style="display: flex; justify-content: center; margin-bottom: 50px">
+    <div style="display: flex; justify-content: center; margin-bottom: 20px">
       <el-pagination
         background
         :page-size="5"
@@ -127,11 +133,12 @@
         :current-page="currentPage"
       />
     </div>
+    <div style="height: 20px"></div>
   </div>
 </template>
 
 <script>
-import { ref, reactive, toRefs } from "vue";
+import { ref, reactive, toRefs, nextTick, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import {
   getArticleById,
@@ -143,6 +150,7 @@ import {
 import { ElMessage } from "element-plus";
 import comment from "../components/comment.vue";
 import dayjs from "dayjs";
+import { useStore } from "vuex";
 export default {
   components: {
     comment,
@@ -174,33 +182,10 @@ export default {
     }
   },
   mounted() {
-    window.document.body.onscroll = () => {
-      if (window.document.documentElement.scrollTop > 260)
-        this.$refs.mulu.$el.style.opacity = 1;
-      if (window.document.documentElement.scrollTop <= 260)
-        this.$refs.mulu.$el.style.opacity = 0;
-    };
-
-    let anchors = this.$refs.preview.$el.querySelectorAll("h1,h2,h3,h4,h5,h6");
-    console.log(anchors);
-    const titles = Array.from(anchors).filter(
-      (title) => !!title.innerText.trim()
-    );
-
-    if (!titles.length) {
-      this.titles = [];
-      return;
-    }
-
-    const hTags = Array.from(
-      new Set(titles.map((title) => title.tagName))
-    ).sort();
-
-    this.titles = titles.map((el) => ({
-      title: el.innerText,
-      lineIndex: el.getAttribute("data-v-md-line"),
-      indent: hTags.indexOf(el.tagName),
-    }));
+    window.addEventListener("scroll", this.scroll, true);
+  },
+  beforeUnmount() {
+    window.removeEventListener("scroll", this.scroll, true);
   },
   data() {
     return {
@@ -235,6 +220,44 @@ export default {
     const textarea = ref("");
     const currentPage = ref(1);
     const number = ref(0);
+    const preview = ref(null);
+    const mulu = ref(null);
+    const store = useStore();
+    onMounted(() => {
+      nextTick(() => {
+        setTimeout(() => {
+          let anchors = preview.value;
+          console.log(
+            preview.value.$el.querySelectorAll(".github-markdown-body")[0]
+          );
+          console.log(
+            preview.value.$el
+              .querySelectorAll(".github-markdown-body")[0]
+              .querySelectorAll("h1,h2,h3,h4,h5,h6")
+          );
+        }, 10);
+      });
+
+      // console.log(anchors);
+      // const titles = Array.from(anchors).filter(
+      //   (title) => !!title.innerText.trim()
+      // );
+
+      // if (!titles.length) {
+      //   this.titles = [];
+      //   return;
+      // }
+
+      // const hTags = Array.from(
+      //   new Set(titles.map((title) => title.tagName))
+      // ).sort();
+
+      // this.titles = titles.map((el) => ({
+      //   title: el.innerText,
+      //   lineIndex: el.getAttribute("data-v-md-line"),
+      //   indent: hTags.indexOf(el.tagName),
+      // }));
+    });
     const handupComment = async () => {
       if (textarea.value.length > 0) {
         const result = await handUpComment(textarea.value, articleId.value);
@@ -273,6 +296,12 @@ export default {
       });
       commentArr.value = result.data.data;
     };
+    const scroll = () => {
+      if (window.document.documentElement.scrollTop > 260)
+        mulu.value.$el.style.opacity = 1;
+      if (window.document.documentElement.scrollTop <= 260)
+        mulu.value.$el.style.opacity = 0;
+    };
     return {
       ...toRefs(obj),
       textarea,
@@ -280,20 +309,23 @@ export default {
       commentArr,
       currentPage,
       number,
+      preview,
       handupComment,
       changePage,
+      scroll,
+      mulu,
+      store,
     };
   },
 };
 </script>
 
-<style>
+<style scoped>
 .container {
   min-width: 1288px;
   width: 100%;
   height: auto;
-  margin-top: 59px;
-  background-image: url("https://huangjunyi-1310688513.cos.ap-shanghai.myqcloud.com/img/%E6%91%84%E5%9B%BE%E7%BD%91_401729159_%E6%B8%90%E5%8F%98%E4%BD%8E%E5%A4%9A%E8%BE%B9%E5%BD%A2%E8%83%8C%E6%99%AF%EF%BC%88%E9%9D%9E%E4%BC%81%E4%B8%9A%E5%95%86%E7%94%A8%EF%BC%89%20%281%29.jpg ");
+  /* margin-top: 59px; */
   background-size: cover;
   position: relative;
   transition: all;

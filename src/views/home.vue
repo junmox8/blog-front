@@ -41,6 +41,9 @@
         <el-menu-item index="/home/message"
           ><el-icon><Edit /></el-icon>留言板</el-menu-item
         >
+        <div class="icon-background">
+          <img @click="changeImg" :src="store.state.Background.bgI" alt="" />
+        </div>
         <el-dropdown
           style="position: absolute; top: 100px; right: 40px; z-index: 100000"
         >
@@ -76,12 +79,21 @@
 
 <script>
 import love from "../utils/createLove";
-import { onMounted } from "vue";
+import { useStore } from "vuex";
+import { onMounted, ref } from "vue";
 export default {
   setup() {
+    const store = useStore();
     onMounted(() => {
       love();
     });
+    const changeImg = () => {
+      store.dispatch("Background/setBackground", 1);
+    };
+    return {
+      changeImg,
+      store,
+    };
   },
 };
 </script>
@@ -93,6 +105,10 @@ export default {
   height: auto;
   min-width: 1388px;
   overflow: hidden;
+}
+.container::after,
+.container::before {
+  clear: both;
 }
 .text {
   animation: color 3s linear infinite;
@@ -164,6 +180,32 @@ export default {
   }
   100% {
     color: #dd1056;
+  }
+}
+.icon-background {
+  width: 40px !important;
+  height: 40px !important;
+  outline: none;
+  margin-left: 8%;
+  margin-top: 8px;
+  animation-name: asd;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  transition: all;
+  transition-duration: 2s;
+}
+.icon-background img {
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+@keyframes asd {
+  from {
+    transform: rotateZ(0deg);
+  }
+  to {
+    transform: rotateZ(360deg);
   }
 }
 </style>

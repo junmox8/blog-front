@@ -1,5 +1,10 @@
 <template>
-  <div class="container">
+  <div
+    class="container"
+    :style="{
+      backgroundImage: 'url(' + store.state.Background.cover + ')',
+    }"
+  >
     <el-card class="box-card">
       <div style="font-weight: 700; font-size: 21px">文章发布</div>
       <div style="margin-top: 20px; font-size: 13px">文章标题</div>
@@ -77,6 +82,7 @@
 </template>
 
 <script>
+import { useStore } from "vuex";
 import { data } from "../json/selectData.js";
 import { uploadFile } from "../utils/cos";
 import { handUpArticle } from "../axios/service";
@@ -105,6 +111,7 @@ export default {
     const content = ref("");
     const selectData = ref([]);
     const inputVisible = ref(false);
+    const store = useStore();
     const getData = async (data) => {
       content.value = data;
       if (
@@ -185,6 +192,7 @@ export default {
       selectData,
       value,
       content,
+      store,
       getData,
       handleStart,
       handleClose,
@@ -203,15 +211,16 @@ export default {
   width: 100%;
   min-height: 90vh;
   height: auto;
-  background-image: url("https://huangjunyi-1310688513.cos.ap-shanghai.myqcloud.com/img/%E6%91%84%E5%9B%BE%E7%BD%91_401729159_%E6%B8%90%E5%8F%98%E4%BD%8E%E5%A4%9A%E8%BE%B9%E5%BD%A2%E8%83%8C%E6%99%AF%EF%BC%88%E9%9D%9E%E4%BC%81%E4%B8%9A%E5%95%86%E7%94%A8%EF%BC%89%20%281%29.jpg ");
   background-size: cover;
+  transition: all;
+  transition-duration: 2s;
 }
 .box-card {
   width: 70%;
   min-height: 90vh;
   height: auto;
   margin-left: 15%;
-  margin-top: 50px;
+  margin-top: 59px;
   margin-bottom: 50px;
   padding-left: 1%;
   animation-name: container;

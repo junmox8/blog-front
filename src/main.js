@@ -7,6 +7,7 @@ import "element-plus/dist/index.css";
 import store from "./store";
 import "./assets/iconfont.css";
 import "./assets/iconfont2.css";
+import "./assets/iconfont3.css";
 import VMdPreview from "@kangc/v-md-editor/lib/preview";
 import "@kangc/v-md-editor/lib/style/preview.css";
 import VMdEditor from "@kangc/v-md-editor";
@@ -23,11 +24,15 @@ import createCopyCodePlugin from "@kangc/v-md-editor/lib/plugins/copy-code/index
 import "@kangc/v-md-editor/lib/plugins/copy-code/copy-code.css";
 import "@kangc/v-md-editor/lib/theme/style/github.css";
 import hljs from "highlight.js";
+import Prism from "prismjs";
+import vuepressTheme from "@kangc/v-md-editor/lib/theme/vuepress.js";
+import "@kangc/v-md-editor/lib/theme/style/vuepress.css";
 VMdPreview.use(githubTheme, {
   Hljs: hljs,
 });
 VMdEditor.use(githubTheme, {
   Hljs: hljs,
+  Prism,
 })
   .use(createTipPlugin())
   .use(createEmojiPlugin())

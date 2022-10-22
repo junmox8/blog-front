@@ -1,5 +1,10 @@
 <template>
-  <div class="container">
+  <div
+    class="container"
+    :style="{
+      backgroundImage: 'url(' + store.state.Background.cover + ')',
+    }"
+  >
     <div class="article-list border">
       <div class="container-title">
         <div class="container-title-left" style="padding-left: 3%">
@@ -89,6 +94,7 @@
         <div class="recent-article-main">
           <Article2
             v-for="(item, index) in recentArticle"
+            :time="item.createdAt"
             :key="index"
             :title="item.title"
           ></Article2>
@@ -119,7 +125,7 @@
               <div style="width: 100%; display: flex; margin-top: 5px">
                 <img
                   width="20"
-                  src="https://huangjunyi-1310688513.cos.ap-shanghai.myqcloud.com/img/%E6%91%84%E5%9B%BE%E7%BD%91_401729159_%E6%B8%90%E5%8F%98%E4%BD%8E%E5%A4%9A%E8%BE%B9%E5%BD%A2%E8%83%8C%E6%99%AF%EF%BC%88%E9%9D%9E%E4%BC%81%E4%B8%9A%E5%95%86%E7%94%A8%EF%BC%89%20%281%29.jpg "
+                  src="https://huangjunyi-1310688513.cos.ap-shanghai.myqcloud.com/articleContent/%E8%9A%81%E4%BA%BA.png "
                   alt=""
                 />
                 <div style="font-size: 13px">有问题欢迎同学来学习讨论^ ^</div>
@@ -139,6 +145,7 @@
 </template>
 
 <script>
+import { useStore } from "vuex";
 import { defineAsyncComponent } from "vue";
 import { ref, reactive } from "vue";
 import {
@@ -169,6 +176,7 @@ export default {
     const articleList = ref([]);
     const recentArticle = ref([]);
     const articleNumber = ref(0);
+    const store = useStore();
     const tagType = ref(["", "success", "info", "warning", "danger"]);
     const tags = ref([
       { name: "vue" },
@@ -195,6 +203,7 @@ export default {
       tags,
       tagType,
       recentArticle,
+      store,
       changePage,
       jumpToArticleDetail,
     };
@@ -207,8 +216,7 @@ export default {
   min-width: 1388px;
   width: 100%;
   height: auto;
-  margin-top: 30px;
-  background-image: url("https://huangjunyi-1310688513.cos.ap-shanghai.myqcloud.com/img/%E6%91%84%E5%9B%BE%E7%BD%91_401729159_%E6%B8%90%E5%8F%98%E4%BD%8E%E5%A4%9A%E8%BE%B9%E5%BD%A2%E8%83%8C%E6%99%AF%EF%BC%88%E9%9D%9E%E4%BC%81%E4%B8%9A%E5%95%86%E7%94%A8%EF%BC%89%20%281%29.jpg");
+  margin-top: 59px;
   background-size: cover;
   position: relative;
   transition: all;
