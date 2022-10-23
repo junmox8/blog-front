@@ -176,8 +176,7 @@ export default {
   async created() {
     const result = await getAllArticleNumber();
     this.articleNumber = result.data.data;
-    const result2 = await getArticleList(1);
-    console.log(result2.data.data);
+    const result2 = await getArticleList(1, 3);
     this.articleList = result2.data.data;
     const result3 = await getRecentArticle();
     this.recentArticle = result3.data.data;
@@ -202,7 +201,7 @@ export default {
       { name: "nextjs" },
     ]);
     const changePage = async (n) => {
-      const result = await getArticleList(n);
+      const result = await getArticleList(n, 3);
       articleList.value = result.data.data;
     };
     const jumpToArticleDetail = async (id) => {

@@ -4,7 +4,11 @@
       <div style="border-radius: 12px; height: 100%; width: 100%">
         <img
           style="width: 100%; height: 100%"
-          src="https://huangjunyi-1310688513.cos.ap-shanghai.myqcloud.com/articleContent/%E6%9C%88%E4%BA%AE.png"
+          :src="
+            canSee == true
+              ? cover
+              : 'https://p3.ssl.qhimgs1.com/sdr/400__/t018609111cb4a43413.jpg'
+          "
           alt=""
         />
       </div>
@@ -45,25 +49,40 @@
       </div>
     </div>
     <div style="width: 100%; height: 68px">
+      <el-skeleton
+        :style="{
+          display: canSee == false ? 'block' : 'none',
+          marginTop: '5px',
+        }"
+        :rows="1"
+        animated
+      />
       <el-popover
         placement="right"
         :width="200"
         trigger="hover"
         content="this is content, this is content, this is content"
+        :style="{ display: canSee == true ? 'block' : 'none' }"
       >
         <template #reference>
-          <div class="moreArticle-text">
-            啊实打实的阿斯顿阿斯顿阿斯顿阿斯顿撒旦
+          <div
+            class="moreArticle-text"
+            :style="{ display: canSee == true ? 'block' : 'none' }"
+          >
+            {{ title }}
           </div>
         </template>
       </el-popover>
-      <div class="moreArticle-userInfo">
+      <div
+        class="moreArticle-userInfo"
+        :style="{ display: canSee == true ? 'flex' : 'none' }"
+      >
         <img
           style="width: 25px; height: 25px; border-radius: 50%"
-          src="https://huangjunyi-1310688513.cos.ap-shanghai.myqcloud.com/articleContent/%E6%9C%88%E4%BA%AE.png"
+          :src="avatar"
           class="avatar"
         />
-        <div class="moreArticle-name">墨刀官网</div>
+        <div class="moreArticle-name">{{ name }}</div>
         <div class="moreArticle-dianzan" @click="star">
           <i
             :style="{ color: dianzan == true ? 'yellow' : '' }"
@@ -82,18 +101,23 @@
 import { ref, reactive, toRefs } from "vue";
 export default {
   name: "moreArticle",
+  props: [
+    "canSee",
+    "avatar",
+    "name",
+    "cover",
+    "title",
+    "like",
+    "look",
+    "comment",
+  ],
+  created() {},
   setup() {
-    const icon = reactive({
-      like: 0,
-      comment: 0,
-      look: 0,
-    });
     const dianzan = ref(false);
     const star = async () => {
       dianzan.value = !dianzan.value;
     };
     return {
-      ...toRefs(icon),
       dianzan,
       star,
     };
@@ -167,6 +191,7 @@ export default {
   padding-right: 5px;
   display: flex;
   align-items: center;
+  position: relative;
 }
 .moreArticle-name {
   font-size: 13px;
@@ -175,7 +200,9 @@ export default {
 .moreArticle-dianzan {
   height: 25px;
   width: 30px;
-  margin-left: 50%;
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
   display: flex;
   justify-content: center;
   align-items: center;

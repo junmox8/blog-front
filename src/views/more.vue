@@ -24,7 +24,6 @@
         <div class="label-detail">
           <div
             class="label-tag"
-            ref="tagSelected"
             v-for="i in item.children"
             :key="i.value"
             :style="{
@@ -50,11 +49,19 @@
         :image-size="200"
         :style="{ display: articles.length > 0 ? 'none' : 'block' }"
       />
-      <moreArticle></moreArticle>
-      <moreArticle></moreArticle>
-      <moreArticle></moreArticle>
-      <moreArticle></moreArticle>
-      <moreArticle></moreArticle>
+      <moreArticle
+        v-for="(item, index) in articles"
+        :key="index"
+        ref="articleRef"
+        :canSee="canSee[index]"
+        :avatar="item.User.avatar"
+        :name="item.User.name"
+        :cover="item.img"
+        :title="item.title"
+        :like="item.like"
+        :look="item.look"
+        :comment="item.comment"
+      ></moreArticle>
       <div style="clear: both"></div>
     </div>
   </div>
@@ -65,18 +72,27 @@ import { data } from "../json/selectData";
 import { Search } from "@element-plus/icons-vue";
 import { useStore } from "vuex";
 import { ref } from "vue";
+import { getArticleList } from "../axios/service";
 import moreArticle from "../components/moreArticle.vue";
 export default {
   components: {
     moreArticle,
   },
-  created() {
+  async created() {
     this.selects = data;
     data.forEach((item) => {
       item.children.forEach((i) => {
         this.isSelect.push(false);
       });
     });
+    const {
+      data: { data: result },
+    } = await getArticleList(1, 12);
+    result.forEach((item) => {
+      this.canSee.push(false);
+    });
+    this.articles = result;
+    if (this.articles.length > 0) this.page++;
   },
   mounted() {
     window.addEventListener("scroll", this.scroll, true);
@@ -89,9 +105,11 @@ export default {
     const store = useStore();
     const input = ref("");
     const selects = ref([]); //json数组
-    const tagSelected = ref([]); //ref
+    const articleRef = ref([]); //ref
     const isSelect = ref([]); //判断是否选择标签 值为true/false
+    const canSee = ref([]); //判断该article是否在可视区域内
     const selectTagValue = ref([]); //选择的tag index
+    const page = ref(1); //发送接口的页数
     const articles = ref([1]);
     const search = (e) => {
       if (e.key === "Enter") alert("1");
@@ -105,14 +123,18 @@ export default {
     };
     const scroll = async () => {
       if (!time.value) {
-        // console.log(window.document.documentElement.scrollTop);
-        // console.log(window.screen.height);
-        if (
-          window.document.documentElement.scrollHeight -
-            window.document.documentElement.scrollTop <=
-          700
-        )
-          console.log(1);
+        //滚动加载
+        // if (
+        //   window.document.documentElement.scrollHeight -
+        //     window.document.documentElement.scrollTop <=
+        //   700
+        // )
+        //   console.log(1);
+        articleRef.value.forEach((item, index) => {
+          if (item.$el.getBoundingClientRect().top < 450) {
+            canSee.value[index] = true;
+          }
+        });
         time.value = setTimeout(() => {
           clearTimeout(time.value);
           time.value = null;
@@ -123,7 +145,6 @@ export default {
       store,
       input,
       selects,
-      tagSelected,
       selectTagValue,
       articles,
       time,
@@ -131,6 +152,9 @@ export default {
       clickTag,
       scroll,
       isSelect,
+      articleRef,
+      canSee,
+      page,
     };
   },
 };

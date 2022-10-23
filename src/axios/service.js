@@ -34,8 +34,10 @@ export const handUpArticle = async (
 export const getAllArticleNumber = async () => {
   return Axios.get("/api/article/getAllArticleNumber");
 };
-export const getArticleList = async (page) => {
-  return Axios.get("/api/article/getArticleList?page=" + page);
+export const getArticleList = async (page, limit) => {
+  return Axios.get(
+    "/api/article/getArticleList?page=" + page + "&limit=" + limit
+  );
 };
 export const getRecentArticle = async () => {
   return Axios.get("/api/article/getRecentArticle");
