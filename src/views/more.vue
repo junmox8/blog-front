@@ -104,6 +104,7 @@ export default {
     const time = ref(null);
     const store = useStore();
     const input = ref("");
+    const searchType = ref(1); //1为全部列表 2为输入搜索 3为标签搜索
     const selects = ref([]); //json数组
     const articleRef = ref([]); //ref
     const isSelect = ref([]); //判断是否选择标签 值为true/false
@@ -124,21 +125,35 @@ export default {
     const scroll = async () => {
       if (!time.value) {
         //滚动加载
-        // if (
-        //   window.document.documentElement.scrollHeight -
-        //     window.document.documentElement.scrollTop <=
-        //   700
-        // )
-        //   console.log(1);
+        if (
+          window.document.documentElement.scrollHeight -
+            window.document.documentElement.scrollTop <=
+          700
+        ) {
+          time.value = setTimeout(() => {
+            clearTimeout(time.value);
+            time.value = null;
+          }, 500);
+          switch (searchType.value) {
+            case 1:
+              const {
+                data: { data: result },
+              } = await getArticleList(page.value, 12);
+              if (result.length > 0) {
+                result.forEach((item) => {
+                  canSee.value.push(false);
+                });
+                articles.value = [...articles.value, ...result];
+                page.value++;
+              }
+              break;
+          }
+        }
         articleRef.value.forEach((item, index) => {
-          if (item.$el.getBoundingClientRect().top < 450) {
+          if (item.$el.getBoundingClientRect().top < 400) {
             canSee.value[index] = true;
           }
         });
-        time.value = setTimeout(() => {
-          clearTimeout(time.value);
-          time.value = null;
-        }, 500);
       }
     };
     return {
@@ -155,6 +170,7 @@ export default {
       articleRef,
       canSee,
       page,
+      searchType,
     };
   },
 };
