@@ -27,7 +27,12 @@
             ref="tagSelected"
             v-for="i in item.children"
             :key="i.value"
-            :isSelect="false"
+            :style="{
+              color: isSelect[i.value - 1] == true ? '#16a0fb' : '#000000',
+              borderRadius: '12px',
+              backgroundColor:
+                isSelect[i.value - 1] == true ? '#e1ecf9' : 'transparent',
+            }"
             @click="clickTag(i.value)"
           >
             {{ i.label }}
@@ -67,6 +72,11 @@ export default {
   },
   created() {
     this.selects = data;
+    data.forEach((item) => {
+      item.children.forEach((i) => {
+        this.isSelect.push(false);
+      });
+    });
   },
   mounted() {
     window.addEventListener("scroll", this.scroll, true);
@@ -80,28 +90,18 @@ export default {
     const input = ref("");
     const selects = ref([]); //json数组
     const tagSelected = ref([]); //ref
+    const isSelect = ref([]); //判断是否选择标签 值为true/false
     const selectTagValue = ref([]); //选择的tag index
     const articles = ref([1]);
     const search = (e) => {
       if (e.key === "Enter") alert("1");
     };
     const clickTag = (index) => {
-      console.log(tagSelected.value[index - 1].getAttribute("isSelect"));
-      if (tagSelected.value[index - 1].getAttribute("isSelect") == "false") {
-        tagSelected.value[index - 1].setAttribute("isSelect", "true");
-        tagSelected.value[index - 1].style.color = "#16a0fb";
-        tagSelected.value[index - 1].style.backgroundColor = "#e1ecf9";
-        tagSelected.value[index - 1].style.borderRadius = "12px";
-        selectTagValue.value.push(index);
-      } else {
-        tagSelected.value[index - 1].setAttribute("isSelect", "false");
-        tagSelected.value[index - 1].style.color = "#000000";
-        tagSelected.value[index - 1].style.backgroundColor = "transparent";
-        tagSelected.value[index - 1].style.borderRadius = "12px";
+      isSelect.value[index - 1] = !isSelect.value[index - 1];
+      if (isSelect.value[index - 1] == "true")
         selectTagValue.value = selectTagValue.value.filter(
           (item) => item != index
         );
-      }
     };
     const scroll = async () => {
       if (!time.value) {
@@ -130,6 +130,7 @@ export default {
       search,
       clickTag,
       scroll,
+      isSelect,
     };
   },
 };
