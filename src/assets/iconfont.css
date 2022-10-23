@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 3643849 */
-  src: url("./iconfont.woff2?t=1662978442099") format("woff2"),
-    url("./iconfont.woff?t=1662978442099") format("woff"),
-    url("./iconfont.ttf?t=1662978442099") format("truetype");
+  src: url('iconfont.woff2?t=1666508647218') format('woff2'),
+       url('iconfont.woff?t=1666508647218') format('woff'),
+       url('iconfont.ttf?t=1666508647218') format('truetype');
 }
 
 .iconfont {
@@ -13,29 +13,39 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-star-fill:before {
+  content: "\e86a";
+}
+
+.icon-star:before {
+  content: "\e7df";
+}
+
+.icon-icon-test:before {
+  content: "\e6da";
+}
+
+.icon-yueliang:before {
+  content: "\e6a2";
+}
+
+.icon-yiren:before {
+  content: "\e61a";
+}
+
+.icon-qq:before {
+  content: "\e603";
+}
+
+.icon-QQ:before {
+  content: "\e882";
+}
+
+.icon-weixin:before {
+  content: "\e604";
+}
+
 .icon-aixin:before {
   content: "\e6c8";
 }
-* {
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box;
-}
-html ::-webkit-scrollbar {
-  /*滚动条整体样式*/
-  width: 8px; /*高宽分别对应横竖滚动条的尺寸*/
-  height: 8px;
-}
 
-html ::-webkit-scrollbar-thumb {
-  /*滚动条里面小方块*/
-  border-radius: 4px;
-  background: #0089ff;
-}
-
-html ::-webkit-scrollbar-track {
-  /*滚动条里面轨道*/
-  border-radius: 4px;
-  background: white;
-  margin: 0;
-}

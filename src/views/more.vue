@@ -24,13 +24,33 @@
         <div class="label-detail">
           <div
             class="label-tag"
-            v-for="item in item.children"
-            :key="item.value"
+            ref="tagSelected"
+            v-for="i in item.children"
+            :key="i.value"
+            :isSelect="false"
+            @click="clickTag(i.value)"
           >
-            {{ item.label }}
+            {{ i.label }}
           </div>
         </div>
       </div>
+    </div>
+    <div
+      :class="[
+        'moreContent-container',
+        articles.length > 0 ? '' : 'article-empty',
+      ]"
+    >
+      <el-empty
+        :image-size="200"
+        :style="{ display: articles.length > 0 ? 'none' : 'block' }"
+      />
+      <moreArticle></moreArticle>
+      <moreArticle></moreArticle>
+      <moreArticle></moreArticle>
+      <moreArticle></moreArticle>
+      <moreArticle></moreArticle>
+      <div style="clear: both"></div>
     </div>
   </div>
 </template>
@@ -40,23 +60,76 @@ import { data } from "../json/selectData";
 import { Search } from "@element-plus/icons-vue";
 import { useStore } from "vuex";
 import { ref } from "vue";
+import moreArticle from "../components/moreArticle.vue";
 export default {
+  components: {
+    moreArticle,
+  },
   created() {
-    console.log(data);
     this.selects = data;
   },
+  mounted() {
+    window.addEventListener("scroll", this.scroll, true);
+  },
+  beforeUnmount() {
+    window.removeEventListener("scroll", this.scroll, true);
+  },
   setup() {
+    const time = ref(null);
     const store = useStore();
     const input = ref("");
-    const selects = ref([]);
+    const selects = ref([]); //json数组
+    const tagSelected = ref([]); //ref
+    const selectTagValue = ref([]); //选择的tag index
+    const articles = ref([1]);
     const search = (e) => {
       if (e.key === "Enter") alert("1");
+    };
+    const clickTag = (index) => {
+      console.log(tagSelected.value[index - 1].getAttribute("isSelect"));
+      if (tagSelected.value[index - 1].getAttribute("isSelect") == "false") {
+        tagSelected.value[index - 1].setAttribute("isSelect", "true");
+        tagSelected.value[index - 1].style.color = "#16a0fb";
+        tagSelected.value[index - 1].style.backgroundColor = "#e1ecf9";
+        tagSelected.value[index - 1].style.borderRadius = "12px";
+        selectTagValue.value.push(index);
+      } else {
+        tagSelected.value[index - 1].setAttribute("isSelect", "false");
+        tagSelected.value[index - 1].style.color = "#000000";
+        tagSelected.value[index - 1].style.backgroundColor = "transparent";
+        tagSelected.value[index - 1].style.borderRadius = "12px";
+        selectTagValue.value = selectTagValue.value.filter(
+          (item) => item != index
+        );
+      }
+    };
+    const scroll = async () => {
+      if (!time.value) {
+        // console.log(window.document.documentElement.scrollTop);
+        // console.log(window.screen.height);
+        if (
+          window.document.documentElement.scrollHeight -
+            window.document.documentElement.scrollTop <=
+          700
+        )
+          console.log(1);
+        time.value = setTimeout(() => {
+          clearTimeout(time.value);
+          time.value = null;
+        }, 500);
+      }
     };
     return {
       store,
       input,
       selects,
+      tagSelected,
+      selectTagValue,
+      articles,
+      time,
       search,
+      clickTag,
+      scroll,
     };
   },
 };
@@ -89,6 +162,7 @@ export default {
   display: flex;
   flex-wrap: wrap;
   padding-top: 20px;
+  box-shadow: 0px 0px 13px 0px rgba(0, 0, 0, 0.4);
 }
 .checkbox-box {
   height: auto;
@@ -118,11 +192,35 @@ export default {
   padding-right: 5px;
   margin-left: 34px;
   margin-bottom: 10px;
+  color: #1f292e;
+  font-size: 13px;
 }
 .label-tag:hover {
   color: #16a0fb;
   cursor: pointer;
   border-radius: 12px;
   background-color: #e1ecf9;
+}
+.moreContent-container {
+  width: 80%;
+  margin-left: 10%;
+  height: auto;
+  min-height: 300px;
+  margin-bottom: 20px;
+  margin-top: 50px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0px 0px 13px 0px rgba(0, 0, 0, 0.4);
+  padding-top: 10px;
+  padding-bottom: 5px;
+}
+.moreContent-container:after,
+.moreContent-container:before {
+  clear: both;
+}
+.article-empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

@@ -301,6 +301,18 @@ export const data = [
         value: 70,
         label: "taro",
       },
+      {
+        value: 71,
+        label: "nextjs",
+      },
+      {
+        value: 72,
+        label: "nestjs",
+      },
+      {
+        value: 73,
+        label: "nuxtjs",
+      },
     ],
   },
 ];
