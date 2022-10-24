@@ -86,6 +86,7 @@
             size="large"
             effect="dark"
             style="margin-left: 6px; cursor: pointer"
+            @click="() => router.push('/home/more?tagId=' + item.value)"
             v-for="(item, index) in tags"
             :key="index"
             :type="tagType[index % 5]"
@@ -198,16 +199,16 @@ export default {
     const store = useStore();
     const tagType = ref(["", "success", "info", "warning", "danger"]);
     const tags = ref([
-      { name: "vue" },
-      { name: "react" },
-      { name: "nodejs" },
-      { name: "express" },
-      { name: "es6" },
-      { name: "git" },
-      { name: "css" },
-      { name: "nginx" },
-      { name: "云服务" },
-      { name: "nextjs" },
+      { name: "vue3", value: 57 },
+      { name: "react", value: 64 },
+      { name: "nodejs", value: 60 },
+      { name: "express", value: 61 },
+      { name: "taro", value: 70 },
+      { name: "git", value: 58 },
+      { name: "css", value: 54 },
+      { name: "nestjs", value: 72 },
+      { name: "nextjs", value: 71 },
+      { name: "webpack", value: 59 },
     ]);
     const changePage = async (n) => {
       const result = await getArticleList(n, 3);

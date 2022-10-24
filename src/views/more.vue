@@ -94,14 +94,35 @@ export default {
         this.isSelect.push(false);
       });
     });
-    const {
-      data: { data: result },
-    } = await getArticleList(1, 12);
-    result.forEach((item) => {
-      this.canSee.push(false);
-    });
-    this.articles = result;
-    if (this.articles.length > 0) this.page++;
+    if (this.$route.query.tagId) {
+      //如果是点击标签进入此界面
+      this.searchType = 3;
+      this.selectTagValue.push(Number(this.$route.query.tagId));
+      this.isSelect[this.$route.query.tagId - 1] =
+        !this.isSelect[this.$route.query.tagId - 1];
+      const {
+        data: { data: result },
+      } = await searchArticleByTag(
+        JSON.stringify(this.selectTagValue),
+        this.word,
+        this.page
+      );
+      result.forEach((item) => {
+        this.canSee.push(false);
+      });
+      this.articles = result;
+      // if (this.articles.length > 0)
+      this.page++;
+    } else {
+      const {
+        data: { data: result2 },
+      } = await getArticleList(1, 12);
+      result2.forEach((item) => {
+        this.canSee.push(false);
+      });
+      this.articles = result2;
+      if (this.articles.length > 0) this.page++;
+    }
   },
   mounted() {
     window.addEventListener("scroll", this.scroll, true);
