@@ -141,9 +141,9 @@
                 <div style="font-size: 13px">有问题欢迎同学来学习讨论^ ^</div>
               </div>
               <div
-                style="font-size: 13px; margin-top: 5px; margin-bottom: 25px"
+                style="font-size: 13px; margin-top: 5px; margin-bottom: 20px"
               >
-                这个博客是我前段时间突发奇想花了十天写的一个简单系统,照着别人的界面设计自己写的一个小型全栈项目,后续会逐渐完善更多功能,目前比较简陋各位多多包涵,最后欢迎各位加我好友一起交流学习
+                这个博客是我前段时间突发奇想花了十天,照着别人的ui设计自己写的一个小型全栈项目,后续会逐渐完善更多功能,目前比较简陋各位多多包涵,最后欢迎各位加我好友一起交流学习
               </div>
             </el-tab-pane>
             <el-tab-pane label="xxx"> 暂时没想好这里写啥= = </el-tab-pane>
@@ -180,6 +180,7 @@ export default {
     this.articleList = result2.data.data;
     const result3 = await getRecentArticle();
     this.recentArticle = result3.data.data;
+    console.log(this.articleList);
   },
   setup() {
     const router = useRouter();

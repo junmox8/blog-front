@@ -14,7 +14,9 @@
         class="input-with-select"
       >
         <template #append>
-          <el-icon style="cursor: pointer"><Search /></el-icon>
+          <el-icon @click="search($event, 1)" style="cursor: pointer"
+            ><Search
+          /></el-icon>
         </template>
       </el-input>
     </div>
@@ -61,6 +63,7 @@
         :like="item.like"
         :look="item.look"
         :comment="item.comment"
+        :id="item.id"
       ></moreArticle>
       <div style="clear: both"></div>
     </div>
@@ -72,12 +75,13 @@ import { data } from "../json/selectData";
 import { Search } from "@element-plus/icons-vue";
 import { useStore } from "vuex";
 import { ref } from "vue";
-import { getArticleList } from "../axios/service";
+import { getArticleList, searchArticle } from "../axios/service";
 import moreArticle from "../components/moreArticle.vue";
 export default {
   components: {
     moreArticle,
   },
+  name: "more",
   async created() {
     this.selects = data;
     data.forEach((item) => {
@@ -103,7 +107,8 @@ export default {
   setup() {
     const time = ref(null);
     const store = useStore();
-    const input = ref("");
+    const input = ref(""); //输入框的值
+    const word = ref(""); //实际搜索用的word
     const searchType = ref(1); //1为全部列表 2为输入搜索 3为标签搜索
     const selects = ref([]); //json数组
     const articleRef = ref([]); //ref
@@ -112,8 +117,26 @@ export default {
     const selectTagValue = ref([]); //选择的tag index
     const page = ref(1); //发送接口的页数
     const articles = ref([1]);
-    const search = (e) => {
-      if (e.key === "Enter") alert("1");
+    // key 0代表enter搜索 1代表点击搜索
+    const search = async (e, key = 0) => {
+      if (e.key === "Enter" || key == 1) {
+        page.value = 1; //初始化页数
+        searchType.value = 2; //转换搜索模式
+        word.value = input.value; //传值给真正发送接口的参数
+        canSee.value = [];
+        isSelect.value.forEach(
+          (item, index) => (isSelect.value[index] = false)
+        );
+        selectTagValue.value = [];
+        const result = await searchArticle(word.value, page.value);
+        articles.value = result.data.data;
+        if (articles.value.length > 0) {
+          page.value++;
+          articles.value.forEach((item) => {
+            canSee.value.push(false);
+          });
+        }
+      }
     };
     const clickTag = (index) => {
       isSelect.value[index - 1] = !isSelect.value[index - 1];
@@ -147,10 +170,25 @@ export default {
                 page.value++;
               }
               break;
+            case 2:
+              const {
+                data: { data: result2 },
+              } = await searchArticle(word.value, page.value);
+              if (result2.length > 0) {
+                result2.forEach((item) => {
+                  canSee.value.push(false);
+                });
+                articles.value = [...articles.value, ...result];
+                page.value++;
+              }
+              break;
           }
         }
         articleRef.value.forEach((item, index) => {
-          if (item.$el.getBoundingClientRect().top < 400) {
+          if (
+            item.$el.getBoundingClientRect().top > 0 &&
+            item.$el.getBoundingClientRect().top < window.screen.height - 300
+          ) {
             canSee.value[index] = true;
           }
         });

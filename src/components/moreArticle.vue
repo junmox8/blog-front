@@ -1,7 +1,10 @@
 <template>
   <div class="more-Article">
     <div class="article-cover">
-      <div style="border-radius: 12px; height: 100%; width: 100%">
+      <div
+        style="border-radius: 12px; height: 100%; width: 100%"
+        @click="router.push('/home/articleDetail?id=' + id)"
+      >
         <img
           style="width: 100%; height: 100%"
           :src="
@@ -22,7 +25,7 @@
           "
         >
           <el-icon><Star /></el-icon>
-          <div style="margin-left: 2px">{{ like }}</div>
+          <div style="margin-left: 2px">{{ likeNumber }}</div>
         </div>
         <div
           style="
@@ -98,6 +101,9 @@
 </template>
 
 <script>
+import { useRouter } from "vue-router";
+import { ElMessage } from "element-plus";
+import { likeOrNot, hasLike } from "../axios/service";
 import { ref, reactive, toRefs } from "vue";
 export default {
   name: "moreArticle",
@@ -110,15 +116,34 @@ export default {
     "like",
     "look",
     "comment",
+    "id",
   ],
-  created() {},
-  setup() {
+  async created() {
+    const {
+      data: { data: result },
+    } = await hasLike(this.id);
+    if (result == 1) this.dianzan = true;
+    this.likeNumber = this.like;
+  },
+  setup(props) {
+    const router = useRouter();
     const dianzan = ref(false);
+    const likeNumber = ref(0);
     const star = async () => {
-      dianzan.value = !dianzan.value;
+      const {
+        data: { data, success, errorMsg },
+      } = await likeOrNot(props.id);
+      if (success == true) {
+        if (data.includes("取消")) likeNumber.value -= 1;
+        else likeNumber.value += 1;
+        ElMessage({ type: "success", message: data });
+        dianzan.value = !dianzan.value;
+      } else ElMessage({ type: "error", message: errorMsg });
     };
     return {
       dianzan,
+      likeNumber,
+      router,
       star,
     };
   },

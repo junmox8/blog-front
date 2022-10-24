@@ -147,3 +147,14 @@ export const addPageViews = async (articleId) => {
     articleId,
   });
 };
+export const likeOrNot = async (articleId) => {
+  return Axios.post("/api/article/likeOrNot", {
+    articleId,
+  });
+};
+export const hasLike = async (articleId) => {
+  return Axios.get("/api/article/hasLike?articleId=" + articleId);
+};
+export const searchArticle = async (word, page) => {
+  return Axios.get("/api/article/searchArticle?word=" + word + "&page=" + page);
+};
