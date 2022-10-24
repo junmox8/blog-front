@@ -111,7 +111,8 @@ export default {
         this.canSee.push(false);
       });
       this.articles = result;
-      // if (this.articles.length > 0)
+      // if (this.articles.length > 0)  之所以去掉注释是因为标签搜索是
+      //数据库找十二个数据判断它们的标签是否与要索引的一致 后续若优化搜索可以去掉
       this.page++;
     } else {
       const {
