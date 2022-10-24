@@ -158,3 +158,13 @@ export const hasLike = async (articleId) => {
 export const searchArticle = async (word, page) => {
   return Axios.get("/api/article/searchArticle?word=" + word + "&page=" + page);
 };
+export const searchArticleByTag = async (tags, word, page) => {
+  return Axios.get(
+    "/api/article/searchArticleByTag?tags=" +
+      tags +
+      "&word=" +
+      word +
+      "&page=" +
+      page
+  );
+};

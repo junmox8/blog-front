@@ -71,11 +71,16 @@
 </template>
 
 <script>
+import qs from "qs";
 import { data } from "../json/selectData";
 import { Search } from "@element-plus/icons-vue";
 import { useStore } from "vuex";
 import { ref } from "vue";
-import { getArticleList, searchArticle } from "../axios/service";
+import {
+  getArticleList,
+  searchArticle,
+  searchArticleByTag,
+} from "../axios/service";
 import moreArticle from "../components/moreArticle.vue";
 export default {
   components: {
@@ -138,12 +143,24 @@ export default {
         }
       }
     };
-    const clickTag = (index) => {
+    const clickTag = async (index) => {
+      searchType.value = 3;
       isSelect.value[index - 1] = !isSelect.value[index - 1];
-      if (isSelect.value[index - 1] == "true")
+      if (isSelect.value[index - 1] == false)
         selectTagValue.value = selectTagValue.value.filter(
           (item) => item != index
         );
+      else selectTagValue.value.push(index);
+      page.value = 1;
+      const {
+        data: { data: result },
+      } = await searchArticleByTag(
+        JSON.stringify(selectTagValue.value),
+        word.value,
+        page.value
+      );
+      page.value++;
+      articles.value = result;
     };
     const scroll = async () => {
       if (!time.value) {
@@ -187,7 +204,7 @@ export default {
         articleRef.value.forEach((item, index) => {
           if (
             item.$el.getBoundingClientRect().top > 0 &&
-            item.$el.getBoundingClientRect().top < window.screen.height - 300
+            item.$el.getBoundingClientRect().top < window.screen.height - 400
           ) {
             canSee.value[index] = true;
           }
@@ -275,7 +292,7 @@ export default {
   font-size: 13px;
 }
 .label-tag:hover {
-  color: #16a0fb;
+  color: #16a0fb !important;
   cursor: pointer;
   border-radius: 12px;
   background-color: #e1ecf9;
