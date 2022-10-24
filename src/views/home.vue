@@ -16,8 +16,8 @@
           style="
             height: 100%;
             line-height: 59px;
-            margin-left: 40px;
-            margin-right: 220px;
+            margin-left: 5%;
+            margin-right: 16%;
             letter-spacing: 2px;
           "
         >
@@ -28,9 +28,6 @@
         >
         <el-menu-item index="/home/article"
           ><el-icon><ChatLineSquare /></el-icon>文章发布</el-menu-item
-        >
-        <el-menu-item index="/home/video"
-          ><el-icon><VideoCamera /></el-icon>视频demo</el-menu-item
         >
         <el-menu-item index="/home/album"
           ><el-icon><Picture /></el-icon>云相册</el-menu-item
@@ -186,7 +183,7 @@ export default {
   width: 40px !important;
   height: 40px !important;
   outline: none;
-  margin-left: 80px;
+  margin-left: 10%;
   margin-top: 8px;
   animation-name: asd;
   animation-duration: 2s;

@@ -22,11 +22,6 @@ const routes = [
         component: () => import("../views/article.vue"),
       },
       {
-        path: "video",
-        name: "video",
-        component: () => import("../views/video.vue"),
-      },
-      {
         path: "album",
         name: "album",
         component: () => import("../views/album.vue"),
