@@ -12,11 +12,18 @@
           <div style="margin-left: 2%">文章列表</div>
         </div>
         <div class="container-title-right right2">
-          共
-          <div style="color: #ffd04b; font-size: 20px">
+          <div>共</div>
+          <div
+            style="
+              color: #ffd04b;
+              font-size: 20px;
+              margin-left: 12px;
+              margin-right: 12px;
+            "
+          >
             {{ articleNumber }}
           </div>
-          篇
+          <div>篇</div>
         </div>
       </div>
       <div class="article-main">
@@ -105,6 +112,7 @@
           <Article2
             v-for="(item, index) in recentArticle"
             :time="item.createdAt"
+            :id="item.id"
             :key="index"
             :title="item.title"
           ></Article2>
@@ -317,7 +325,6 @@ export default {
   flex-wrap: nowrap;
   align-items: center;
   color: #000000;
-  letter-spacing: 10px;
 }
 .music-title-contain {
   width: 100%;
@@ -383,5 +390,7 @@ export default {
 .recent-article-main {
   height: 220px;
   width: 100%;
+  perspective: 1000px;
+  transform-style: preserve-3d;
 }
 </style>

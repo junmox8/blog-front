@@ -68,15 +68,19 @@
           height: 100px;
           position: fixed;
           top: 200px;
-          left: 1000px;
+          right: 100px;
           transition: all;
           transition-duration: 1s;
         "
       >
+        <div>目录锚点之后上线,敬请期待</div>
         <div
           v-for="(anchor, index) in titles"
           :key="index"
-          :style="{ padding: `10px 0 10px ${anchor.indent * 20}px` }"
+          :style="{
+            padding: `10px 0 10px ${anchor.indent * 20}px`,
+            display: 'none',
+          }"
           @click="handleAnchorClick(anchor)"
         >
           <a style="cursor: pointer">{{ anchor.title }}</a>

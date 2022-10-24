@@ -195,7 +195,23 @@ export default {
                 result2.forEach((item) => {
                   canSee.value.push(false);
                 });
-                articles.value = [...articles.value, ...result];
+                articles.value = [...articles.value, ...result2];
+                page.value++;
+              }
+              break;
+            case 3:
+              const {
+                data: { data: result3 },
+              } = await searchArticleByTag(
+                JSON.stringify(selectTagValue.value),
+                word.value,
+                page.value
+              );
+              if (result3.length > 0) {
+                result3.forEach((item) => {
+                  canSee.value.push(false);
+                });
+                articles.value = [...articles.value, ...result3];
                 page.value++;
               }
               break;

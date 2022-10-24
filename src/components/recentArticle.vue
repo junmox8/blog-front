@@ -1,5 +1,7 @@
 <template>
   <div
+    @click="jumpTo"
+    class="recent-container"
     style="
       width: 100%;
       height: 55px;
@@ -32,9 +34,10 @@
 </template>
 
 <script>
+import { useRouter } from "vue-router";
 import dayjs from "dayjs";
 export default {
-  props: ["title", "time"],
+  props: ["title", "time", "id"],
   created() {
     this.createdAt = dayjs(
       dayjs(this.time.replace(/T/g, " ").replace(/.[\d]{3}Z/, " ")).valueOf() +
@@ -46,7 +49,20 @@ export default {
       createdAt: "",
     };
   },
+  methods: {
+    jumpTo() {
+      this.$router.push("/home/articleDetail?id=" + this.id);
+    },
+  },
 };
 </script>
 
-<style></style>
+<style scoped>
+.recent-container {
+  transition: all 1s;
+  cursor: pointer;
+}
+.recent-container:hover {
+  transform: translateY(-10px);
+}
+</style>
