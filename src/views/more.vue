@@ -49,6 +49,7 @@
     >
       <el-empty
         :image-size="200"
+        description="暂无相关文章"
         :style="{ display: articles.length > 0 ? 'none' : 'block' }"
       />
       <moreArticle
@@ -104,7 +105,7 @@ export default {
         data: { data: result },
       } = await searchArticleByTag(
         JSON.stringify(this.selectTagValue),
-        this.word,
+        "",
         this.page
       );
       result.forEach((item) => {
@@ -234,8 +235,8 @@ export default {
                   canSee.value.push(false);
                 });
                 articles.value = [...articles.value, ...result3];
-                page.value++;
               }
+              page.value++;
               break;
           }
         }

@@ -165,6 +165,11 @@ export default {
   transition-duration: 1.5s;
   border-color: #ebebeb;
 }
+@media screen and (min-width: 1388px) {
+  .more-Article {
+    margin-left: 1.3%;
+  }
+}
 .more-Article:hover {
   transform: translateY(-10px);
   box-shadow: 0px 0px 13px 0px #ebebeb;

@@ -17,7 +17,7 @@
             height: 100%;
             line-height: 59px;
             margin-left: 5%;
-            margin-right: 16%;
+            margin-right: 250px;
             letter-spacing: 2px;
           "
         >
@@ -67,7 +67,7 @@
     </div>
     <!-- <router-view></router-view> -->
     <router-view v-slot="{ Component }">
-      <keep-alive :exclude="['admin', 'articleDetail']">
+      <keep-alive :exclude="['admin', 'articleDetail', 'more']">
         <component :is="Component" />
       </keep-alive>
     </router-view>
@@ -110,6 +110,12 @@ export default {
 .text {
   animation: color 3s linear infinite;
   outline: none;
+}
+@media screen and (min-width: 1388px) {
+  .text {
+    margin-left: 5%;
+    margin-right: 16%;
+  }
 }
 @keyframes color {
   0% {
