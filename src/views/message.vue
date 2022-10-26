@@ -63,6 +63,7 @@
         "
       >
         <el-pagination
+          style="outline: none !important"
           background
           :page-size="5"
           layout="prev, pager, next"
@@ -222,5 +223,11 @@ export default {
   margin-left: 5%;
   height: auto;
   min-height: 400px;
+}
+.number,
+li,
+.el-pager li,
+.el-pager {
+  outline: none !important;
 }
 </style>

@@ -301,9 +301,15 @@ export default {
       commentArr.value = result.data.data;
     };
     const scroll = () => {
-      if (window.document.documentElement.scrollTop > 260)
+      if (
+        window.document.documentElement.scrollTop >
+        0.7 * window.screen.height //260 864
+      )
         mulu.value.$el.style.opacity = 1;
-      if (window.document.documentElement.scrollTop <= 260)
+      if (
+        window.document.documentElement.scrollTop <=
+        0.7 * window.screen.height
+      )
         mulu.value.$el.style.opacity = 0;
     };
     return {

@@ -28,6 +28,15 @@
       </div>
       <div class="article-main">
         <div style="height: 720px; width: 100%">
+          <Loading
+            :style="{ display: loading == true ? 'block' : 'none' }"
+          ></Loading>
+          <Loading
+            :style="{ display: loading == true ? 'block' : 'none' }"
+          ></Loading>
+          <Loading
+            :style="{ display: loading == true ? 'block' : 'none' }"
+          ></Loading>
           <Article
             @click="jumpToArticleDetail(item.id)"
             v-for="(item, index) in articleList"
@@ -43,17 +52,6 @@
             :comment="item.comment"
             :look="item.look"
           ></Article>
-          <!-- <Suspense>
-            <template v-slot:fallback>
-              <Loading></Loading>
-            </template>
-            <template v-slot:default>
-              <Article
-                v-for="(item, index) in articleList"
-                :key="index"
-              ></Article>
-            </template>
-          </Suspense> -->
         </div>
         <div class="article-main-bottom">
           <el-pagination
@@ -110,6 +108,9 @@
           </div>
         </div>
         <div class="recent-article-main">
+          <Loading2
+            :style="{ display: loading2 == true ? 'block' : 'none' }"
+          ></Loading2>
           <Article2
             v-for="(item, index) in recentArticle"
             :time="item.createdAt"
@@ -180,15 +181,20 @@ export default {
   components: {
     Article,
     Loading: defineAsyncComponent(() => import("../components/loading.vue")),
+    Loading2: defineAsyncComponent(() => import("../components/loading2.vue")),
     Article2,
   },
   async created() {
     const result = await getAllArticleNumber();
     this.articleNumber = result.data.data;
+    this.loading = true;
+    this.loading2 = true;
     const result2 = await getArticleList(1, 3);
     this.articleList = result2.data.data;
+    this.loading = false;
     const result3 = await getRecentArticle();
     this.recentArticle = result3.data.data;
+    this.loading2 = false;
     console.log(this.articleList);
   },
   setup() {
@@ -198,6 +204,8 @@ export default {
     const articleNumber = ref(0);
     const store = useStore();
     const tagType = ref(["", "success", "info", "warning", "danger"]);
+    const loading = ref(false);
+    const loading2 = ref(false);
     const tags = ref([
       { name: "vue3", value: 57 },
       { name: "react", value: 64 },
@@ -211,8 +219,11 @@ export default {
       { name: "webpack", value: 59 },
     ]);
     const changePage = async (n) => {
+      loading.value = true;
+      articleList.value = [];
       const result = await getArticleList(n, 3);
       articleList.value = result.data.data;
+      loading.value = false;
     };
     const jumpToArticleDetail = async (id) => {
       router.push("/home/articleDetail?id=" + id);
@@ -225,6 +236,8 @@ export default {
       recentArticle,
       store,
       router,
+      loading,
+      loading2,
       changePage,
       jumpToArticleDetail,
     };
@@ -393,5 +406,6 @@ export default {
   width: 100%;
   perspective: 1000px;
   transform-style: preserve-3d;
+  overflow: hidden;
 }
 </style>

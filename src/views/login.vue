@@ -26,6 +26,7 @@
             v-model="login_username"
             @focus="click_input3"
             @blur="blur_input3"
+            @keypress="login($event, 1)"
             class="input"
           />
           <p>密码</p>
@@ -35,6 +36,7 @@
             v-model="login_password"
             @focus="click_input4"
             @blur="blur_input4"
+            @keypress="login($event, 1)"
             class="input"
           />
           <div class="remember">
@@ -49,9 +51,14 @@
               点击注册
             </div>
           </div>
-          <el-button class="login" @click="login" :loading="isLoading">{{
-            isLoading === true ? `请等待${second}秒` : "立即登录"
-          }}</el-button>
+          <el-button
+            class="login"
+            @click="login({ keyCode: '12' }, 0)"
+            :loading="isLoading"
+            >{{
+              isLoading === true ? `请等待${second}秒` : "立即登录"
+            }}</el-button
+          >
         </div>
         <div class="input_box2" ref="box2">
           <p>用户名</p>
@@ -171,30 +178,33 @@ export default {
         });
       }
     };
-    const login = async () => {
-      if (login_username.value && login_password.value) {
-        const result = await userLogin(
-          login_username.value,
-          login_password.value
-        );
-        if (result.data.success == true) {
+    const login = async (e, type) => {
+      console.log(e);
+      if (type == 0 || e.keyCode === 13) {
+        if (login_username.value && login_password.value) {
+          const result = await userLogin(
+            login_username.value,
+            login_password.value
+          );
+          if (result.data.success == true) {
+            ElMessage({
+              message: "用户登录成功",
+              type: "success",
+            });
+            store.dispatch("User/setToken", result.data.data.token);
+            localStorage.setItem("token", result.data.data.token);
+            router.push("/home?id=" + result.data.data.dataValues.id);
+          } else
+            ElMessage({
+              message: result.data.errorMsg,
+              type: "error",
+            });
+        } else {
           ElMessage({
-            message: "用户登录成功",
-            type: "success",
-          });
-          store.dispatch("User/setToken", result.data.data.token);
-          localStorage.setItem("token", result.data.data.token);
-          router.push("/home?id=" + result.data.data.dataValues.id);
-        } else
-          ElMessage({
-            message: result.data.errorMsg,
+            message: "请补充完整信息",
             type: "error",
           });
-      } else {
-        ElMessage({
-          message: "请补充完整信息",
-          type: "error",
-        });
+        }
       }
     };
     return {

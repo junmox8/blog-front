@@ -31,14 +31,13 @@
       backgroundImage: 'url(' + store.state.Background.cover + ')',
     }"
   >
-    <el-card class="album-container">
+    <el-card class="album-container" v-loading="loading">
       <el-tabs
         @tab-change="changeTab"
         v-model="editableTabsValue"
         type="card"
         addable
         stretch
-        class="demo-tabs"
         @edit="handleTabsEdit"
       >
         <el-tab-pane
@@ -51,10 +50,13 @@
       </el-tabs>
       <div
         :class="[
-          editableTabs.length == 0 ? 'pane-container2' : 'pane-container',
+          editableTabs.length == 0
+            ? 'pane-container2'
+            : img1.length == 0
+            ? 'pane-container2'
+            : 'pane-container',
         ]"
         ref="contain"
-        v-loading="loading"
       >
         <div
           :style="{
@@ -66,6 +68,18 @@
           }"
         >
           <el-empty style="margin: 0 auto" description="暂无图片分类" />
+        </div>
+        <div
+          :style="{
+            display:
+              editableTabs.length != 0 && img1.length == 0 ? 'block' : 'none',
+            position: 'absolute',
+            top: '0px',
+            width: '100%',
+            height: '100%',
+          }"
+        >
+          <el-empty style="margin: 0 auto" description="暂无图片" />
         </div>
         <el-card shadow="hover" v-for="(item, index) in img1" :key="index">
           <img
@@ -277,7 +291,7 @@ export default {
       imgsRef.value.forEach((item, index) => {
         if (
           item.getBoundingClientRect().top > 0 &&
-          item.getBoundingClientRect().top < window.screen.height - 300
+          item.getBoundingClientRect().top < 0.653 * window.screen.height
         )
           item.src = item.getAttribute("dataUrl");
       });

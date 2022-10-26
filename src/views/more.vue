@@ -46,6 +46,7 @@
         'moreContent-container',
         articles.length > 0 ? '' : 'article-empty',
       ]"
+      v-loading="loading"
     >
       <el-empty
         :image-size="200"
@@ -89,6 +90,7 @@ export default {
   },
   name: "more",
   async created() {
+    this.loading = true;
     this.selects = data;
     data.forEach((item) => {
       item.children.forEach((i) => {
@@ -125,6 +127,7 @@ export default {
       this.articles = result2;
       if (this.articles.length > 0) this.page++;
     }
+    this.loading = false;
   },
   mounted() {
     window.addEventListener("scroll", this.scroll, true);
@@ -146,6 +149,7 @@ export default {
     const page = ref(1); //发送接口的页数
     const articles = ref([1]);
     // key 0代表enter搜索 1代表点击搜索
+    const loading = ref(false);
     const search = async (e, key = 0) => {
       if (e.key === "Enter" || key == 1) {
         page.value = 1; //初始化页数
@@ -191,7 +195,7 @@ export default {
         if (
           window.document.documentElement.scrollHeight -
             window.document.documentElement.scrollTop <=
-          700
+          1.0416 * window.screen.height
         ) {
           time.value = setTimeout(() => {
             clearTimeout(time.value);
@@ -241,9 +245,10 @@ export default {
           }
         }
         articleRef.value.forEach((item, index) => {
+          console.log(window.screen.height);
           if (
             item.$el.getBoundingClientRect().top > 0 &&
-            item.$el.getBoundingClientRect().top < window.screen.height - 400
+            item.$el.getBoundingClientRect().top < window.screen.height * 0.537
           ) {
             canSee.value[index] = true;
           }
@@ -265,6 +270,7 @@ export default {
       canSee,
       page,
       searchType,
+      loading,
     };
   },
 };

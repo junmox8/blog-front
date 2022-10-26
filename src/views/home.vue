@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div style="position: fixed; top: 0; width: 100%; z-index: 10">
+    <div style="position: fixed; top: 0; width: 100%; z-index: 100000">
       <el-menu
         default-active="/home/admin"
         router
