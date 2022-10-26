@@ -257,6 +257,11 @@ export default {
   transition-duration: 2s;
   overflow: hidden;
 }
+@media screen and (max-width: 1515px) {
+  .catalogue-tags {
+    margin-left: 20px !important;
+  }
+}
 .article-list {
   width: 50%;
   height: 130vh;
@@ -393,6 +398,7 @@ export default {
   height: 120px;
   display: flex;
   flex-wrap: wrap;
+  align-content: space-around;
   padding-top: 5px;
   padding-bottom: 5px;
   padding-left: 2.5%;

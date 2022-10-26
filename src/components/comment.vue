@@ -102,32 +102,45 @@ export default {
     const dialogFormVisible = ref(false);
     const comment = ref("");
     const commentAttach = ref([]);
+    const time2 = ref(null); //节流
     const handUpComment = async () => {
-      const result = await handUpCommentAttach(
-        props.userId,
-        props.id,
-        comment.value
-      );
-      if (result) {
-        ElMessage.success({
-          type: "success",
-          message: "回复成功",
-        });
-        const result2 = await getTheCommentAttach(props.id);
-        result2.data.data.forEach((item) => {
-          item.createdAt = dayjs(
-            dayjs(
-              item.createdAt.replace(/T/g, " ").replace(/.[\d]{3}Z/, " ")
-            ).valueOf() + 28800000
-          ).format("YYYY-MM-DD HH:mm:ss");
-        });
-        commentAttach.value = result2.data.data;
+      if (!time2.value) {
+        time2.value = setTimeout(() => {
+          clearTimeout(time2.value);
+          time2.value = null;
+        }, 5000);
+        if (comment.value.length > 0) {
+          const result = await handUpCommentAttach(
+            props.userId,
+            props.id,
+            comment.value
+          );
+          if (result) {
+            ElMessage.success({
+              type: "success",
+              message: "回复成功",
+            });
+            const result2 = await getTheCommentAttach(props.id);
+            result2.data.data.forEach((item) => {
+              item.createdAt = dayjs(
+                dayjs(
+                  item.createdAt.replace(/T/g, " ").replace(/.[\d]{3}Z/, " ")
+                ).valueOf() + 28800000
+              ).format("YYYY-MM-DD HH:mm:ss");
+            });
+            commentAttach.value = result2.data.data;
+          } else
+            ElMessage.error({
+              type: "error",
+              message: "回复失败,请稍后重试",
+            });
+          dialogFormVisible.value = false;
+        } else ElMessage.error({ type: "error", message: "请填写内容" });
       } else
         ElMessage.error({
           type: "error",
-          message: "回复失败,请稍后重试",
+          message: "请稍等一会再回复",
         });
-      dialogFormVisible.value = false;
     };
     const resend = async (data) => {
       const result = await getTheCommentAttach(props.id);
@@ -145,6 +158,7 @@ export default {
       dialogFormVisible,
       comment,
       commentAttach,
+      time2,
       handUpComment,
       resend,
     };

@@ -68,7 +68,7 @@
           height: 100px;
           position: fixed;
           top: 200px;
-          right: 100px;
+          right: 3%;
           transition: all;
           transition-duration: 1s;
         "
@@ -305,12 +305,12 @@ export default {
         window.document.documentElement.scrollTop >
         0.7 * window.screen.height //260 864
       )
-        mulu.value.$el.style.opacity = 1;
+        mulu.value.$el.style.opacity = 0;
       if (
         window.document.documentElement.scrollTop <=
         0.7 * window.screen.height
       )
-        mulu.value.$el.style.opacity = 0;
+        mulu.value.$el.style.opacity = 1;
     };
     return {
       ...toRefs(obj),
@@ -335,6 +335,7 @@ export default {
   min-width: 1288px;
   width: 100%;
   height: auto;
+  min-height: 100vh;
   /* margin-top: 59px; */
   background-size: cover;
   position: relative;

@@ -147,7 +147,11 @@ export default {
   },
   mounted() {
     window.addEventListener("scroll", this.scroll, true);
-    // window.onscroll = this.scroll;//
+    this.$nextTick(() => {
+      setTimeout(() => {
+        console.log(this.imgsRef);
+      }, 10);
+    });
   },
   beforeUnmount() {
     window.removeEventListener("scroll", this.scroll, true);
@@ -169,9 +173,11 @@ export default {
       img1: [],
     });
     onMounted(() => {
-      // imgsRef.value.forEach((item) => {
-      //   console.log(item.getBoundingClientRect());
-      // });
+      nextTick(() => {
+        setTimeout(() => {
+          console.log(imgsRef.value);
+        }, 0);
+      });
     });
     const handleTabsEdit = (targetName, action) => {
       if (action === "add") {

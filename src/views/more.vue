@@ -4,6 +4,7 @@
     :style="{
       backgroundImage: 'url(' + store.state.Background.cover + ')',
     }"
+    v-loading="loading"
   >
     <div class="more-title">
       <el-input
@@ -46,7 +47,6 @@
         'moreContent-container',
         articles.length > 0 ? '' : 'article-empty',
       ]"
-      v-loading="loading"
     >
       <el-empty
         :image-size="200"

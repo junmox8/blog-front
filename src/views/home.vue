@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div style="position: fixed; top: 0; width: 100%; z-index: 100000">
+    <div style="position: fixed; top: 0; width: 100%; z-index: 5">
       <el-menu
         default-active="/home/admin"
         router
@@ -16,8 +16,8 @@
           style="
             height: 100%;
             line-height: 59px;
-            margin-left: 5%;
-            margin-right: 250px;
+            margin-left: 45px;
+            margin-right: 240px;
             letter-spacing: 2px;
           "
         >
@@ -116,6 +116,9 @@ export default {
     margin-left: 5%;
     margin-right: 16%;
   }
+  .icon-background {
+    margin-left: 10%;
+  }
 }
 @keyframes color {
   0% {
@@ -189,7 +192,7 @@ export default {
   width: 40px !important;
   height: 40px !important;
   outline: none;
-  margin-left: 10%;
+  margin-left: 200px;
   margin-top: 8px;
   animation-name: asd;
   animation-duration: 2s;
@@ -210,5 +213,11 @@ export default {
   to {
     transform: rotateZ(360deg);
   }
+}
+.el-menu el-menu--horizontal el-menu-demo,
+.el-menu,
+.el-menu--horizontal,
+.el-menu-demo {
+  height: 59.4px !important;
 }
 </style>

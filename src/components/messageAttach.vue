@@ -102,35 +102,47 @@ export default {
     });
     const dialogFormVisible = ref(false);
     const message = ref("");
+    const time2 = ref(null); //节流
     const handUpMessage = async () => {
-      if (message.value.length > 0) {
-        dialogFormVisible.value = false;
-        const result = await handUpMessageAttachAttach(
-          message.value,
-          props.fromUserId,
-          props.messageId
-        );
-        if (result) {
-          ElMessage.success({
-            type: "success",
-            message: "回复成功",
-          });
-          emit("resend", 1);
+      if (!time2.value) {
+        time2.value = setTimeout(() => {
+          clearTimeout(time2.value);
+          time2.value = null;
+        }, 5000);
+        if (message.value.length > 0) {
+          dialogFormVisible.value = false;
+          const result = await handUpMessageAttachAttach(
+            message.value,
+            props.fromUserId,
+            props.messageId
+          );
+          if (result) {
+            ElMessage.success({
+              type: "success",
+              message: "回复成功",
+            });
+            emit("resend", 1);
+          } else
+            ElMessage.error({
+              type: "error",
+              message: "回复失败,请稍后重试",
+            });
         } else
           ElMessage.error({
             type: "error",
-            message: "回复失败,请稍后重试",
+            message: "请填写内容",
           });
       } else
         ElMessage.error({
           type: "error",
-          message: "请填写内容",
+          message: "请稍等一会再回复",
         });
     };
     return {
       time_tr,
       dialogFormVisible,
       message,
+      time2,
       ...toRefs(user1),
       ...toRefs(user2),
       handUpMessage,
