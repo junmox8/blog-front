@@ -85,7 +85,7 @@
           <img
             class="el-image"
             style="width: 100%"
-            src="https://p3.ssl.qhimgs1.com/sdr/400__/t018609111cb4a43413.jpg"
+            src="https://huangjunyi-1310688513.cos.ap-shanghai.myqcloud.com/articleContent/t018609111cb4a43413.jpg"
             :dataUrl="item"
             ref="imgsRef"
           />

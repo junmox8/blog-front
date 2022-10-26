@@ -10,7 +10,7 @@
           :src="
             canSee == true
               ? cover
-              : 'https://p3.ssl.qhimgs1.com/sdr/400__/t018609111cb4a43413.jpg'
+              : 'https://huangjunyi-1310688513.cos.ap-shanghai.myqcloud.com/articleContent/t018609111cb4a43413.jpg'
           "
           alt=""
         />

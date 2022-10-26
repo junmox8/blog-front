@@ -5,8 +5,8 @@
 import { useRouter } from "vue-router";
 export default {
   created() {
-    const router = useRouter();
-    router.push("/login");
+    // const router = useRouter();
+    // router.push("/login");
   },
 };
 </script>
