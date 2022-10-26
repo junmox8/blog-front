@@ -20,7 +20,7 @@
           style="
             display: flex;
             align-items: center;
-            margin-left: 140px;
+            margin-left: 65%;
             font-size: 12px;
           "
         >
@@ -64,7 +64,7 @@
         placement="right"
         :width="200"
         trigger="hover"
-        content="this is content, this is content, this is content"
+        :content="title"
         :style="{ display: canSee == true ? 'block' : 'none' }"
       >
         <template #reference>
@@ -152,9 +152,9 @@ export default {
 
 <style scoped lang="scss">
 .more-Article {
-  width: 260px;
+  width: 23.4%;
   height: 260px !important;
-  margin-left: 14px;
+  margin-left: 1.28%;
   float: left;
   margin-bottom: 10px;
   cursor: pointer;
@@ -226,6 +226,10 @@ export default {
 .moreArticle-name {
   font-size: 13px;
   color: #1f292e;
+  max-width: 60%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .moreArticle-dianzan {
   height: 25px;

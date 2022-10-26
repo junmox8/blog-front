@@ -150,6 +150,7 @@ export default {
     const articles = ref([1]);
     // key 0代表enter搜索 1代表点击搜索
     const loading = ref(false);
+    const time2 = ref(null); //点击标签防抖发送请求
     const search = async (e, key = 0) => {
       if (e.key === "Enter" || key == 1) {
         page.value = 1; //初始化页数
@@ -179,15 +180,38 @@ export default {
         );
       else selectTagValue.value.push(index);
       page.value = 1;
-      const {
-        data: { data: result },
-      } = await searchArticleByTag(
-        JSON.stringify(selectTagValue.value),
-        word.value,
-        page.value
-      );
-      page.value++;
-      articles.value = result;
+      if (!time2) {
+        time2.value = setTimeout(async () => {
+          loading.value = true;
+          const {
+            data: { data: result },
+          } = await searchArticleByTag(
+            JSON.stringify(selectTagValue.value),
+            word.value,
+            page.value
+          );
+          page.value++;
+          articles.value = result;
+          time2.value = null;
+          loading.value = false;
+        }, 1000);
+      } else {
+        clearTimeout(time2.value);
+        time2.value = setTimeout(async () => {
+          loading.value = true;
+          const {
+            data: { data: result },
+          } = await searchArticleByTag(
+            JSON.stringify(selectTagValue.value),
+            word.value,
+            page.value
+          );
+          page.value++;
+          articles.value = result;
+          time2.value = null;
+          loading.value = false;
+        }, 1000);
+      }
     };
     const scroll = async () => {
       if (!time.value) {
@@ -271,6 +295,7 @@ export default {
       page,
       searchType,
       loading,
+      time2,
     };
   },
 };
