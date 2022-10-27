@@ -73,13 +73,12 @@
           transition-duration: 1s;
         "
       >
-        <div>目录锚点之后上线,敬请期待</div>
+        <!-- <div>目录锚点之后上线,敬请期待</div> -->
         <div
           v-for="(anchor, index) in titles"
           :key="index"
           :style="{
             padding: `10px 0 10px ${anchor.indent * 20}px`,
-            display: 'none',
           }"
           @click="handleAnchorClick(anchor)"
         >
@@ -142,7 +141,7 @@
 </template>
 
 <script>
-import { ref, reactive, toRefs, nextTick, onMounted } from "vue";
+import { ref, reactive, toRefs, nextTick, onMounted, onUpdated } from "vue";
 import { useRoute } from "vue-router";
 import {
   getArticleById,
@@ -188,6 +187,33 @@ export default {
   mounted() {
     window.addEventListener("scroll", this.scroll, true);
   },
+  updated() {
+    this.$nextTick(() => {
+      setTimeout(() => {
+        let anchors =
+          this.$refs.preview.$el.querySelectorAll("h1,h2,h3,h4,h5,h6");
+        const titles = Array.from(anchors).filter(
+          (title) => !!title.innerText.trim()
+        );
+
+        if (!titles.length) {
+          this.titles = [];
+          return;
+        }
+
+        const hTags = Array.from(
+          new Set(titles.map((title) => title.tagName))
+        ).sort();
+
+        this.titles = titles.map((el) => ({
+          title: el.innerText,
+          lineIndex: el.getAttribute("data-v-md-line"),
+          indent: hTags.indexOf(el.tagName),
+        }));
+        console.log(this.titles);
+      }, 10);
+    });
+  },
   beforeUnmount() {
     window.removeEventListener("scroll", this.scroll, true);
   },
@@ -203,8 +229,9 @@ export default {
       const heading = preview.$el.querySelector(
         `[data-v-md-line="${lineIndex}"]`
       );
+      console.log(preview);
       if (heading) {
-        preview.scrollToTarget({
+        preview.previewScrollToTarget({
           target: heading,
           scrollContainer: window,
           top: 60,
@@ -227,41 +254,7 @@ export default {
     const preview = ref(null);
     const mulu = ref(null);
     const store = useStore();
-    onMounted(() => {
-      nextTick(() => {
-        setTimeout(() => {
-          let anchors = preview.value;
-          console.log(
-            preview.value.$el.querySelectorAll(".github-markdown-body")[0]
-          );
-          console.log(
-            preview.value.$el
-              .querySelectorAll(".github-markdown-body")[0]
-              .querySelectorAll("h1,h2,h3,h4,h5,h6")
-          );
-        }, 10);
-      });
-
-      // console.log(anchors);
-      // const titles = Array.from(anchors).filter(
-      //   (title) => !!title.innerText.trim()
-      // );
-
-      // if (!titles.length) {
-      //   this.titles = [];
-      //   return;
-      // }
-
-      // const hTags = Array.from(
-      //   new Set(titles.map((title) => title.tagName))
-      // ).sort();
-
-      // this.titles = titles.map((el) => ({
-      //   title: el.innerText,
-      //   lineIndex: el.getAttribute("data-v-md-line"),
-      //   indent: hTags.indexOf(el.tagName),
-      // }));
-    });
+    onUpdated(() => {});
     const handupComment = async () => {
       if (textarea.value.length > 0) {
         const result = await handUpComment(textarea.value, articleId.value);
