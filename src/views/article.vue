@@ -128,7 +128,7 @@ export default {
             introduction.value,
             content.value,
             dynamicTags.value.join(),
-            value.value.join(),
+            value.value.sort().join(),
             imageUrl.value
           );
           if (result.data.success == true) {

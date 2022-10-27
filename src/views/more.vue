@@ -77,13 +77,14 @@ import qs from "qs";
 import { data } from "../json/selectData";
 import { Search } from "@element-plus/icons-vue";
 import { useStore } from "vuex";
-import { ref } from "vue";
+import { ref, nextTick } from "vue";
 import {
   getArticleList,
   searchArticle,
   searchArticleByTag,
 } from "../axios/service";
 import moreArticle from "../components/moreArticle.vue";
+import { ElMessage } from "element-plus";
 export default {
   components: {
     moreArticle,
@@ -98,6 +99,7 @@ export default {
       });
     });
     if (this.$route.query.tagId) {
+      this.canScroll = false;
       //如果是点击标签进入此界面
       this.searchType = 3;
       this.selectTagValue.push(Number(this.$route.query.tagId));
@@ -113,11 +115,13 @@ export default {
       result.forEach((item) => {
         this.canSee.push(false);
       });
+      this.$nextTick(() => (this.canScroll = true));
       this.articles = result;
       // if (this.articles.length > 0)  之所以去掉注释是因为标签搜索是
       //数据库找十二个数据判断它们的标签是否与要索引的一致 后续若优化搜索可以去掉
-      this.page++;
+      if (this.articles.length > 0) this.page++;
     } else {
+      this.canScroll = false;
       const {
         data: { data: result2 },
       } = await getArticleList(1, 12);
@@ -125,6 +129,7 @@ export default {
         this.canSee.push(false);
       });
       this.articles = result2;
+      this.$nextTick(() => (this.canScroll = true));
       if (this.articles.length > 0) this.page++;
     }
     this.loading = false;
@@ -136,7 +141,8 @@ export default {
     window.removeEventListener("scroll", this.scroll, true);
   },
   setup() {
-    const time = ref(null);
+    const time = ref(null); //滚动节流
+    const canScroll = ref(true); //防止点击标签时滚动 造成接口发送冲突问题
     const store = useStore();
     const input = ref(""); //输入框的值
     const word = ref(""); //实际搜索用的word
@@ -151,25 +157,38 @@ export default {
     // key 0代表enter搜索 1代表点击搜索
     const loading = ref(false);
     const time2 = ref(null); //点击标签防抖发送请求
+    const time3 = ref(null); //搜索节流
     const search = async (e, key = 0) => {
-      if (e.key === "Enter" || key == 1) {
-        page.value = 1; //初始化页数
-        searchType.value = 2; //转换搜索模式
-        word.value = input.value; //传值给真正发送接口的参数
-        canSee.value = [];
-        isSelect.value.forEach(
-          (item, index) => (isSelect.value[index] = false)
-        );
-        selectTagValue.value = [];
-        const result = await searchArticle(word.value, page.value);
-        articles.value = result.data.data;
-        if (articles.value.length > 0) {
-          page.value++;
-          articles.value.forEach((item) => {
-            canSee.value.push(false);
-          });
+      if (!time3.value) {
+        time3.value = setTimeout(() => {
+          clearTimeout(time3.value);
+          time3.value = null;
+        }, 1000);
+        if (e.key === "Enter" || key == 1) {
+          page.value = 1; //初始化页数
+          searchType.value = 2; //转换搜索模式
+          word.value = input.value; //传值给真正发送接口的参数
+          canSee.value = [];
+          isSelect.value.forEach(
+            (item, index) => (isSelect.value[index] = false)
+          );
+          selectTagValue.value = [];
+          canScroll.value = false;
+          const result = await searchArticle(word.value, page.value);
+          articles.value = result.data.data;
+          if (articles.value.length > 0) {
+            page.value++;
+            articles.value.forEach((item) => {
+              canSee.value.push(false);
+            });
+            nextTick(() => (canScroll.value = true));
+          }
         }
-      }
+      } else
+        ElMessage({
+          type: "error",
+          message: "请稍后再搜索",
+        });
     };
     const clickTag = async (index) => {
       searchType.value = 3;
@@ -179,42 +198,49 @@ export default {
           (item) => item != index
         );
       else selectTagValue.value.push(index);
+      selectTagValue.value.sort();
       page.value = 1;
       if (!time2) {
         time2.value = setTimeout(async () => {
           loading.value = true;
+          canScroll.value = false;
           const {
             data: { data: result },
           } = await searchArticleByTag(
-            JSON.stringify(selectTagValue.value),
+            JSON.stringify(selectTagValue.value.sort()),
             word.value,
             page.value
           );
-          page.value++;
+          if (result.length > 0) page.value++;
           articles.value = result;
           time2.value = null;
+          nextTick(() => (canScroll.value = true));
           loading.value = false;
         }, 1000);
       } else {
         clearTimeout(time2.value);
         time2.value = setTimeout(async () => {
           loading.value = true;
+          canScroll.value = false;
           const {
             data: { data: result },
           } = await searchArticleByTag(
-            JSON.stringify(selectTagValue.value),
+            JSON.stringify(selectTagValue.value.sort()),
             word.value,
             page.value
           );
-          page.value++;
+          if (result.length > 0) {
+            page.value++;
+            nextTick(() => (canScroll.value = true));
+          }
           articles.value = result;
-          time2.value = null;
           loading.value = false;
+          time2.value = null;
         }, 1000);
       }
     };
     const scroll = async () => {
-      if (!time.value) {
+      if (!time.value && canScroll.value == true) {
         //滚动加载
         if (
           window.document.documentElement.scrollHeight -
@@ -254,7 +280,7 @@ export default {
               const {
                 data: { data: result3 },
               } = await searchArticleByTag(
-                JSON.stringify(selectTagValue.value),
+                JSON.stringify(selectTagValue.value.sort()),
                 word.value,
                 page.value
               );
@@ -263,8 +289,8 @@ export default {
                   canSee.value.push(false);
                 });
                 articles.value = [...articles.value, ...result3];
+                page.value++;
               }
-              page.value++;
               break;
           }
         }
@@ -296,6 +322,8 @@ export default {
       searchType,
       loading,
       time2,
+      time3,
+      canScroll,
     };
   },
 };
