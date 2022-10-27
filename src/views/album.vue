@@ -147,10 +147,14 @@ export default {
   },
   mounted() {
     window.addEventListener("scroll", this.scroll, true);
-    this.$nextTick(() => {
-      setTimeout(() => {
-        console.log(this.imgsRef);
-      }, 10);
+  },
+  updated() {
+    this.imgsRef.forEach((item, index) => {
+      if (
+        item.getBoundingClientRect().top > 0 &&
+        item.getBoundingClientRect().top < 0.653 * window.screen.height
+      )
+        item.src = item.getAttribute("dataUrl");
     });
   },
   beforeUnmount() {
