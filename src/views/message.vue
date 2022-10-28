@@ -107,6 +107,7 @@ export default {
     message,
   },
   setup() {
+    const time = ref(null); //发送留言节流
     const text = ref(null);
     const textarea = ref("");
     const number = ref(0);
@@ -119,26 +120,36 @@ export default {
           message: "请填写内容",
           type: "error",
         });
-      const result = await handUpMessage(textarea.value);
-      if (result.data.success == true) {
-        ElMessage({
-          message: "提交留言成功",
-          type: "success",
-        });
-        const result2 = await getOnePageMessage(currentPage.value);
-        result2.data.data.forEach((item) => {
-          item.createdAt = dayjs(
-            dayjs(
-              item.createdAt.replace(/T/g, " ").replace(/.[\d]{3}Z/, " ")
-            ).valueOf() + 28800000
-          ).format("YYYY-MM-DD HH:mm:ss");
-        });
-        messageArr.value = result2.data.data;
-        number.value++;
+      if (!time.value) {
+        time.value = setTimeout(() => {
+          clearTimeout(time.value);
+          time.value = null;
+        }, 5000);
+        const result = await handUpMessage(textarea.value);
+        if (result.data.success == true) {
+          ElMessage({
+            message: "提交留言成功",
+            type: "success",
+          });
+          const result2 = await getOnePageMessage(currentPage.value);
+          result2.data.data.forEach((item) => {
+            item.createdAt = dayjs(
+              dayjs(
+                item.createdAt.replace(/T/g, " ").replace(/.[\d]{3}Z/, " ")
+              ).valueOf() + 28800000
+            ).format("YYYY-MM-DD HH:mm:ss");
+          });
+          messageArr.value = result2.data.data;
+          number.value++;
+        } else
+          ElMessage({
+            message: result.data.errorMsg,
+            type: "error",
+          });
       } else
-        ElMessage({
-          message: result.data.errorMsg,
+        ElMessage.error({
           type: "error",
+          message: "请稍等一会再回复",
         });
     };
     const changePage = async (page) => {
@@ -161,6 +172,7 @@ export default {
       currentPage,
       messageArr,
       store,
+      time,
       handupComment,
       changePage,
     };

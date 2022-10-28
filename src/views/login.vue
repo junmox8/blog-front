@@ -1,6 +1,7 @@
 <template>
   <div
     class="global"
+    v-loading="loading"
     :style="{
       backgroundImage:
         'https://www.bing.com//th?id=OHR.ClingmansDome_ZH-CN0900594339_1920x1080.jpg&rf=LaDigue_1920x1080.jpg&pid=hp',
@@ -123,6 +124,7 @@ export default {
     const isLoading = ref(false);
     const isLoading2 = ref(false);
     const second = ref(0);
+    const loading = ref(false);
     const jumpToRegister = () => {
       box1.value.style.left = "-100%";
       box2.value.style.left = "0";
@@ -157,6 +159,7 @@ export default {
     };
     const register = async () => {
       if (register_username.value && register_password.value) {
+        loading.value = true;
         const result = await userRegister(
           register_username.value,
           register_password.value
@@ -171,6 +174,7 @@ export default {
             message: result.data.errorMsg,
             type: "error",
           });
+        loading.value = false;
       } else {
         ElMessage({
           message: "请补充完整信息",
@@ -182,6 +186,7 @@ export default {
       console.log(e);
       if (type == 0 || e.keyCode === 13) {
         if (login_username.value && login_password.value) {
+          loading.value = true;
           const result = await userLogin(
             login_username.value,
             login_password.value
@@ -199,6 +204,7 @@ export default {
               message: result.data.errorMsg,
               type: "error",
             });
+          loading.value = false;
         } else {
           ElMessage({
             message: "请补充完整信息",
@@ -233,6 +239,7 @@ export default {
       box2,
       register,
       login,
+      loading,
     };
   },
 };
