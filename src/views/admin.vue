@@ -185,17 +185,16 @@ export default {
     Article2,
   },
   async created() {
-    const result = await getAllArticleNumber();
-    this.articleNumber = result.data.data;
     this.loading = true;
     this.loading2 = true;
+    const result = await getAllArticleNumber();
+    this.articleNumber = result.data.data;
     const result2 = await getArticleList(1, 3);
     this.articleList = result2.data.data;
     this.loading = false;
     const result3 = await getRecentArticle();
     this.recentArticle = result3.data.data;
     this.loading2 = false;
-    console.log(this.articleList);
   },
   setup() {
     const router = useRouter();

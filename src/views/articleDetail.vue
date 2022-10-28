@@ -112,6 +112,7 @@
         </div>
       </el-card>
     </div>
+    <div class="icon-line"></div>
     <div
       style="
         width: 60%;
@@ -136,6 +137,7 @@
         >提交</el-button
       >
     </div>
+
     <div class="comment-area">
       <el-skeleton :rows="8" v-if="commentArr.length == 0 && number != 0" />
       <comment
@@ -236,7 +238,6 @@ export default {
           lineIndex: el.getAttribute("data-v-md-line"),
           indent: hTags.indexOf(el.tagName),
         }));
-        console.log(this.titles);
       }, 10);
     });
   },
@@ -394,5 +395,13 @@ export default {
 .cursor-title:hover,
 .cursor-title:visited {
   color: #8fc4f7;
+}
+.icon-line {
+  width: 60%;
+  margin-left: 10%;
+  height: 50px;
+  display: flex;
+  flex-wrap: nowrap;
+  margin-bottom: 50px;
 }
 </style>
