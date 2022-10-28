@@ -201,7 +201,7 @@ export default {
           (item) => item != index
         );
       else selectTagValue.value.push(index);
-      searchType.value = selectTagValue.value.length == 0 ? 1 : 3;
+      searchType.value = selectTagValue.value.length == 3;
       selectTagValue.value.sort();
       page.value = 1;
       if (!time2) {
@@ -244,12 +244,14 @@ export default {
       }
     };
     const scroll = async () => {
-      if (!time.value && canScroll.value == true && searchType.value != 3) {
+      if (!time.value) {
         //滚动加载
         if (
           window.document.documentElement.scrollHeight -
             window.document.documentElement.scrollTop <=
-          1.0416 * window.screen.height
+            1.0416 * window.screen.height &&
+          canScroll.value == true &&
+          searchType.value != 3
         ) {
           time.value = setTimeout(() => {
             clearTimeout(time.value);
@@ -298,10 +300,11 @@ export default {
             //   break;
           }
         }
+
         articleRef.value.forEach((item, index) => {
           if (
             item.$el.getBoundingClientRect().top > 0 &&
-            item.$el.getBoundingClientRect().top < window.screen.height * 0.537
+            item.$el.getBoundingClientRect().top < window.screen.height * 0.58
           ) {
             canSee.value[index] = true;
           }
