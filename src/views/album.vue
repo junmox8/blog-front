@@ -149,13 +149,13 @@ export default {
     window.addEventListener("scroll", this.scroll, true);
   },
   updated() {
-    this.imgsRef.forEach((item, index) => {
-      if (
-        item.getBoundingClientRect().top > 0 &&
-        item.getBoundingClientRect().top < 0.653 * window.screen.height
-      )
-        item.src = item.getAttribute("dataUrl");
-    });
+    // this.imgsRef.forEach((item, index) => {
+    //   if (
+    //     item.getBoundingClientRect().top > 0 &&
+    //     item.getBoundingClientRect().top < 0.653 * window.screen.height
+    //   )
+    //     item.src = item.getAttribute("dataUrl");
+    // });
   },
   beforeUnmount() {
     window.removeEventListener("scroll", this.scroll, true);

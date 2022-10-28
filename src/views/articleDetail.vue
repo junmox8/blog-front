@@ -65,24 +65,50 @@
         style="
           width: 20%;
           margin-left: 2%;
-          height: 100px;
+          height: 400px;
           position: fixed;
           top: 200px;
           right: 3%;
           transition: all;
           transition-duration: 1s;
+          display: flex;
+          flex-wrap: wrap;
         "
       >
-        <!-- <div>目录锚点之后上线,敬请期待</div> -->
         <div
-          v-for="(anchor, index) in titles"
-          :key="index"
-          :style="{
-            padding: `10px 0 10px ${anchor.indent * 20}px`,
-          }"
-          @click="handleAnchorClick(anchor)"
+          style="
+            width: 100%;
+            height: 10%;
+            border-bottom-style: solid;
+            border-bottom-width: 1px;
+            border-bottom-color: black;
+            margin-bottom: 2%;
+          "
         >
-          <a style="cursor: pointer">{{ anchor.title }}</a>
+          目录
+        </div>
+        <div
+          style="
+            width: 100%;
+            height: auto;
+            max-height: 88%;
+            overflow: scroll;
+            overflow-x: hidden;
+          "
+        >
+          <div
+            v-for="(anchor, index) in titles"
+            :key="index"
+            :style="{
+              padding: `0px 0px 10px ${(anchor.indent - 1) * 20}px`,
+              marginBottom: '5px',
+            }"
+            @click="handleAnchorClick(anchor, index)"
+          >
+            <a ref="cursorTitle" style="cursor: pointer" class="cursor-title">{{
+              anchor.title
+            }}</a>
+          </div>
         </div>
       </el-card>
     </div>
@@ -223,13 +249,16 @@ export default {
     };
   },
   methods: {
-    handleAnchorClick(anchor) {
+    handleAnchorClick(anchor, index) {
+      this.$refs.cursorTitle.forEach((item, ind) => {
+        if (ind == index) item.style.color = "#8fc4f7";
+        else item.style.color = "#000000";
+      });
       const { preview } = this.$refs;
       const { lineIndex } = anchor;
       const heading = preview.$el.querySelector(
         `[data-v-md-line="${lineIndex}"]`
       );
-      console.log(preview);
       if (heading) {
         preview.previewScrollToTarget({
           target: heading,
@@ -240,6 +269,7 @@ export default {
     },
   },
   setup(props) {
+    const time2 = ref(null);
     const route = useRoute();
     const obj = reactive({
       title: "",
@@ -254,11 +284,21 @@ export default {
     const preview = ref(null);
     const mulu = ref(null);
     const store = useStore();
+    const cursorTitle = ref([]);
     onUpdated(() => {});
     const handupComment = async () => {
-      if (textarea.value.length > 0) {
+      if (textarea.value.length == 0)
+        return ElMessage.error({
+          type: "error",
+          message: "请填写评论内容",
+        });
+      if (!time2.value) {
+        time2.value = setTimeout(() => {
+          clearTimeout(time2.value);
+          time2.value = null;
+        }, 5000);
         const result = await handUpComment(textarea.value, articleId.value);
-        if (result) {
+        if (result.data.success == true) {
           ElMessage.success({
             type: "success",
             message: "发表评论成功",
@@ -277,7 +317,7 @@ export default {
       } else
         ElMessage.error({
           type: "error",
-          message: "请填写评论内容",
+          message: "请稍等一会再回复",
         });
     };
     const changePage = async (page) => {
@@ -318,6 +358,8 @@ export default {
       scroll,
       mulu,
       store,
+      time2,
+      cursorTitle,
     };
   },
 };
@@ -348,5 +390,9 @@ export default {
   margin-left: 8.5%;
   height: auto;
   margin-bottom: 100px;
+}
+.cursor-title:hover,
+.cursor-title:visited {
+  color: #8fc4f7;
 }
 </style>
