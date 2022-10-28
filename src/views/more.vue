@@ -176,6 +176,10 @@ export default {
           canScroll.value = false;
           const result = await searchArticle(word.value, page.value);
           articles.value = result.data.data;
+          ElMessage({
+            type: "success",
+            message: "搜索成功",
+          });
           if (articles.value.length > 0) {
             page.value++;
             articles.value.forEach((item) => {
@@ -191,13 +195,13 @@ export default {
         });
     };
     const clickTag = async (index) => {
-      searchType.value = 3;
       isSelect.value[index - 1] = !isSelect.value[index - 1];
       if (isSelect.value[index - 1] == false)
         selectTagValue.value = selectTagValue.value.filter(
           (item) => item != index
         );
       else selectTagValue.value.push(index);
+      searchType.value = selectTagValue.value.length == 0 ? 1 : 3;
       selectTagValue.value.sort();
       page.value = 1;
       if (!time2) {
@@ -240,7 +244,7 @@ export default {
       }
     };
     const scroll = async () => {
-      if (!time.value && canScroll.value == true) {
+      if (!time.value && canScroll.value == true && searchType.value != 3) {
         //滚动加载
         if (
           window.document.documentElement.scrollHeight -
@@ -276,26 +280,25 @@ export default {
                 page.value++;
               }
               break;
-            case 3:
-              const {
-                data: { data: result3 },
-              } = await searchArticleByTag(
-                JSON.stringify(selectTagValue.value.sort()),
-                word.value,
-                page.value
-              );
-              if (result3.length > 0) {
-                result3.forEach((item) => {
-                  canSee.value.push(false);
-                });
-                articles.value = [...articles.value, ...result3];
-                page.value++;
-              }
-              break;
+            // case 3:
+            //   const {
+            //     data: { data: result3 },
+            //   } = await searchArticleByTag(
+            //     JSON.stringify(selectTagValue.value.sort()),
+            //     word.value,
+            //     page.value
+            //   );
+            //   if (result3.length > 0) {
+            //     result3.forEach((item) => {
+            //       canSee.value.push(false);
+            //     });
+            //     articles.value = [...articles.value, ...result3];
+            //     page.value++;
+            //   }
+            //   break;
           }
         }
         articleRef.value.forEach((item, index) => {
-          console.log(window.screen.height);
           if (
             item.$el.getBoundingClientRect().top > 0 &&
             item.$el.getBoundingClientRect().top < window.screen.height * 0.537
