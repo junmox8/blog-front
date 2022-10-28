@@ -58,7 +58,7 @@
         :key="index"
         ref="articleRef"
         :canSee="canSee[index]"
-        :avatar="item.User.avatar"
+        :avatar="item.User.avatar || ''"
         :name="item.User.name"
         :cover="item.img"
         :title="item.title"

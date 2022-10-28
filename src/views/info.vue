@@ -5,7 +5,38 @@
       backgroundImage: 'url(' + store.state.Background.cover + ')',
     }"
   >
-    <div class="info-container">
+    <!-- 骨架屏 -->
+    <el-skeleton
+      :style="{ display: loading == true ? 'block' : 'none' }"
+      style="width: 50%; margin-left: 15%; height: 480px; margin-top: 50px"
+    >
+      <template #template>
+        <div style="display: flex; flex-direction: column">
+          <el-skeleton-item variant="text" style="width: 30%" />
+          <el-skeleton-item
+            variant="circle"
+            style="width: 300px; height: 300px"
+          />
+          <div style="padding: 14px">
+            <el-skeleton-item variant="p" style="width: 50%" />
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                justify-items: space-between;
+              "
+            >
+              <el-skeleton-item variant="text" style="margin-right: 16px" />
+              <el-skeleton-item variant="text" style="width: 30%" />
+            </div>
+          </div>
+        </div>
+      </template>
+    </el-skeleton>
+    <div
+      class="info-container"
+      :style="{ display: loading == true ? 'none' : 'block' }"
+    >
       <div class="animate1" style="color: #fcac2b; font-weight: 600">
         下面这些就是你的个人信息~
       </div>
@@ -122,6 +153,7 @@ import { reactive, ref, toRefs } from "vue";
 import { ElMessage } from "element-plus";
 export default {
   async created() {
+    this.loading = true;
     const {
       data: {
         data: { name, avatar, introduction },
@@ -132,6 +164,7 @@ export default {
     this.name2 = name;
     this.introduction2 = introduction;
     this.introduction = introduction;
+    this.loading = false;
   },
   setup() {
     const userInfo = reactive({
@@ -146,6 +179,7 @@ export default {
     const isEdit = ref(false);
     const store = useStore();
     const router = useRouter();
+    const loading = ref(false);
     const exit = async () => {
       localStorage.removeItem("token");
       router.replace("/login");
@@ -182,6 +216,7 @@ export default {
       save,
       isEdit,
       store,
+      loading,
       handleStart,
       cancelEdit,
     };

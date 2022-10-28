@@ -7,7 +7,20 @@
     }"
   >
     <div class="articleDetail-title">
-      <div style="width: auto; max-width: 60%; height: auto">
+      <div
+        :style="{
+          display: loading1 == false && loading2 == false ? 'none' : 'block',
+        }"
+        style="width: 40%"
+      >
+        <el-skeleton :rows="1" />
+      </div>
+      <div
+        :style="{
+          display: loading1 == false && loading2 == false ? 'block' : 'none',
+        }"
+        style="width: auto; max-width: 60%; height: auto"
+      >
         <div
           style="
             width: 100%;
@@ -53,12 +66,36 @@
       "
     >
       <el-card style="width: 60%; margin-left: 10%">
+        <el-skeleton
+          :style="{
+            display: loading1 == false && loading2 == false ? 'none' : 'block',
+          }"
+          :rows="11"
+        />
         <v-md-editor
+          :style="{
+            display: loading1 == false && loading2 == false ? 'block' : 'none',
+          }"
           :model-value="content"
           mode="preview"
           ref="preview"
         ></v-md-editor>
         <!-- <v-md-preview :text="content" ref="preview" /> -->
+      </el-card>
+      <el-card
+        style="
+          width: 20%;
+          height: 400px;
+          margin-left: 2%;
+          position: fixed;
+          top: 200px;
+          right: 3%;
+        "
+        :style="{
+          display: loading1 == false && loading2 == false ? 'none' : 'block',
+        }"
+      >
+        <el-skeleton :rows="11" />
       </el-card>
       <el-card
         ref="mulu"
@@ -74,8 +111,15 @@
           display: flex;
           flex-wrap: wrap;
         "
+        :style="{
+          backgroundColor:
+            loading1 == false && loading2 == false ? '#fff' : 'transparent',
+        }"
       >
         <div
+          :style="{
+            display: loading1 == false && loading2 == false ? 'block' : 'none',
+          }"
           style="
             width: 100%;
             height: 10%;
@@ -88,6 +132,9 @@
           目录
         </div>
         <div
+          :style="{
+            display: loading1 == false && loading2 == false ? 'block' : 'none',
+          }"
           style="
             width: 100%;
             height: auto;
@@ -188,10 +235,15 @@ export default {
   },
   name: "articleDetail",
   async created() {
+    this.loading1 = true;
+    this.loading2 = true;
+    this.loading3 = true;
     const { data } = await getArticleById(this.$route.query.id);
     (this.title = data.data.title),
       (this.content = data.data.content),
       (this.time = data.data.createdAt.substring(0, 10));
+    this.loading1 = false;
+    this.loading2 = false;
     this.articleId = this.$route.query.id;
     const result = await getAllContent(this.$route.query.id, 1);
     result.data.data.forEach((item) => {
@@ -202,6 +254,7 @@ export default {
       ).format("YYYY-MM-DD HH:mm:ss");
     });
     this.commentArr = result.data.data;
+    this.loading3 = false;
     const result2 = await getCommentNumber(this.$route.query.id);
     this.number = result2.data.data;
     const result3 = await addPageViews(this.$route.query.id);
@@ -286,6 +339,12 @@ export default {
     const mulu = ref(null);
     const store = useStore();
     const cursorTitle = ref([]);
+    const loadings = reactive({
+      //骨架屏
+      loading1: false, //文章标题及内容
+      loading2: false, //文章标签
+      loading3: false, //文章评论
+    });
     onUpdated(() => {});
     const handupComment = async () => {
       if (textarea.value.length == 0)
@@ -361,6 +420,7 @@ export default {
       store,
       time2,
       cursorTitle,
+      ...toRefs(loadings),
     };
   },
 };

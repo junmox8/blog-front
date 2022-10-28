@@ -30,6 +30,7 @@
     :style="{
       backgroundImage: 'url(' + store.state.Background.cover + ')',
     }"
+    v-loading="loading2"
   >
     <el-card class="album-container" v-loading="loading">
       <el-tabs
@@ -118,6 +119,8 @@ import { ElMessage } from "element-plus";
 export default {
   name: "album",
   async created() {
+    this.loading2 = true;
+    this.img1 = [];
     const result = await getAllImgKinds();
     result.data.data.forEach((item, index) => {
       this.editableTabs.push({
@@ -125,6 +128,7 @@ export default {
         name: index,
       });
     });
+    this.loading2 = false;
     if (this.editableTabs.length != 0) {
       this.loading = true;
       this.editableTabsValue = this.editableTabs[0].name;
@@ -133,13 +137,13 @@ export default {
       } = await getImgs(this.editableTabs[0].title);
       if (data2[0] && data2[0].url) {
         this.allImgs = data2[0].url.split(",");
-        this.allImgs.forEach((item, index) => {
-          this.fileList.push({
-            name: index,
-            url: item,
-          });
-          this.img1.push(item);
-        });
+        // this.allImgs.forEach((item, index) => {
+        //   this.fileList.push({
+        //     name: index,
+        //     url: item,
+        //   });
+        //   this.img1.push(item);
+        // });
         this.loading = false;
       }
       this.loading = false;
@@ -147,15 +151,6 @@ export default {
   },
   mounted() {
     window.addEventListener("scroll", this.scroll, true);
-  },
-  updated() {
-    // this.imgsRef.forEach((item, index) => {
-    //   if (
-    //     item.getBoundingClientRect().top > 0 &&
-    //     item.getBoundingClientRect().top < 0.653 * window.screen.height
-    //   )
-    //     item.src = item.getAttribute("dataUrl");
-    // });
   },
   beforeUnmount() {
     window.removeEventListener("scroll", this.scroll, true);
@@ -171,18 +166,13 @@ export default {
     const fileList = ref([]);
     const allImgs = ref([]);
     const loading = ref(false);
+    const loading2 = ref(false);
     const imgsRef = ref([]);
     const store = useStore();
     const imgs = reactive({
       img1: [],
     });
-    onMounted(() => {
-      nextTick(() => {
-        setTimeout(() => {
-          console.log(imgsRef.value);
-        }, 0);
-      });
-    });
+    onMounted(() => {});
     const handleTabsEdit = (targetName, action) => {
       if (action === "add") {
         dialogVisible.value = true;
@@ -325,6 +315,7 @@ export default {
       ...toRefs(imgs),
       allImgs,
       loading,
+      loading2,
       container,
       imgsRef,
       store,
