@@ -21,3 +21,6 @@ html ::-webkit-scrollbar-track {
   background: white;
   margin: 0;
 }
+.el-message {
+  z-index: 10000000000000000000000 !important;
+}
