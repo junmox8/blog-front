@@ -394,7 +394,10 @@ export default {
 .upload {
   position: fixed;
   bottom: 250px;
-  right: 180px;
+  right: 13%;
+  width: 50px;
+  height: 50px;
+  font-size: 20px;
 }
 .el-image:hover {
   transition: all;
