@@ -249,7 +249,7 @@ export default {
         if (
           window.document.documentElement.scrollHeight -
             window.document.documentElement.scrollTop <=
-            1.0416 * window.screen.height &&
+            window.document.documentElement.offsetHeight * 0.73 &&
           canScroll.value == true &&
           searchType.value != 3
         ) {
@@ -300,11 +300,11 @@ export default {
             //   break;
           }
         }
-
         articleRef.value.forEach((item, index) => {
           if (
             item.$el.getBoundingClientRect().top > 0 &&
-            item.$el.getBoundingClientRect().top < window.screen.height * 0.58
+            item.$el.getBoundingClientRect().top <
+              window.document.documentElement.offsetHeight * 0.37
           ) {
             canSee.value[index] = true;
           }

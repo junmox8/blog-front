@@ -65,7 +65,7 @@
         flex-wrap: nowrap;
       "
     >
-      <el-card style="width: 60%; margin-left: 10%">
+      <el-card style="width: 60%; margin-left: 10%" ref="articleCard">
         <el-skeleton
           :style="{
             display: loading1 == false && loading2 == false ? 'none' : 'block',
@@ -345,6 +345,7 @@ export default {
       loading2: false, //文章标签
       loading3: false, //文章评论
     });
+    const articleCard = ref(null);
     onUpdated(() => {});
     const handupComment = async () => {
       if (textarea.value.length == 0)
@@ -396,12 +397,14 @@ export default {
     const scroll = () => {
       if (
         window.document.documentElement.scrollTop >
-        0.7 * window.screen.height //260 864
+        -articleCard.value.$el.offsetHeight * 0.2 +
+          (articleCard.value.$el.offsetTop + articleCard.value.$el.offsetHeight)
       )
         mulu.value.$el.style.opacity = 0;
       if (
         window.document.documentElement.scrollTop <=
-        0.7 * window.screen.height
+        -articleCard.value.$el.offsetHeight * 0.2 +
+          (articleCard.value.$el.offsetTop + articleCard.value.$el.offsetHeight)
       )
         mulu.value.$el.style.opacity = 1;
     };
@@ -420,6 +423,7 @@ export default {
       store,
       time2,
       cursorTitle,
+      articleCard,
       ...toRefs(loadings),
     };
   },
@@ -434,7 +438,6 @@ export default {
   min-height: 100vh;
   /* margin-top: 59px; */
   background-size: cover;
-  background-repeat: no-repeat;
   position: relative;
   transition: all;
   transition-duration: 2s;
