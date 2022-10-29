@@ -185,7 +185,7 @@ export default {
   margin-top: 59px;
   width: 100%;
   min-width: 1388px;
-  min-height: 90vh;
+  min-height: 100vh;
   height: auto;
   background-size: cover;
   transition: all;

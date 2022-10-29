@@ -16,8 +16,8 @@
           style="
             height: 100%;
             line-height: 59px;
-            margin-left: 45px;
-            margin-right: 240px;
+            margin-left: 5%;
+            margin-right: 20%;
             letter-spacing: 2px;
           "
         >

@@ -27,7 +27,7 @@
     <div
       style="
         position: absolute;
-        right: 2.5%;
+        right: 0%;
         top: 6px;
         font-size: 14px;
         display: flex;
@@ -215,7 +215,7 @@ export default {
 .responceText {
   position: absolute;
   bottom: 5px;
-  right: 3%;
+  right: 0;
   cursor: pointer;
   font-size: 12px;
   color: #8fc4f7;

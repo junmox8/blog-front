@@ -413,4 +413,7 @@ export default {
   transform-style: preserve-3d;
   overflow: hidden;
 }
+.el-tabs--border-card {
+  border-bottom-style: none;
+}
 </style>

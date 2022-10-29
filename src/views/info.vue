@@ -229,7 +229,7 @@ export default {
   min-width: 1388px;
   margin-top: 59px;
   width: 100%;
-  min-height: 91.6vh;
+  min-height: 100vh;
   height: auto;
   background-size: cover;
   transition: all;

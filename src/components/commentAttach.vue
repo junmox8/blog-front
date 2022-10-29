@@ -169,7 +169,7 @@ export default {
 }
 .commentAttach-time {
   position: absolute;
-  right: 2.8%;
+  right: 0%;
   top: 6px;
   font-size: 14px;
 }
@@ -228,7 +228,7 @@ export default {
 .responce-Text {
   position: absolute;
   bottom: 5px;
-  right: 3.3%;
+  right: 0%;
   cursor: pointer;
   font-size: 12px;
   color: #8fc4f7;

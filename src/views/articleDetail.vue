@@ -434,6 +434,7 @@ export default {
   min-height: 100vh;
   /* margin-top: 59px; */
   background-size: cover;
+  background-repeat: no-repeat;
   position: relative;
   transition: all;
   transition-duration: 2s;
