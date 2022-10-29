@@ -114,7 +114,7 @@ import {
 } from "../axios/service";
 import { useStore } from "vuex";
 import { ArrowUp, Upload } from "@element-plus/icons-vue";
-import { reactive, ref, toRefs, nextTick, onMounted } from "vue";
+import { reactive, ref, toRefs, nextTick, onUpdated } from "vue";
 import { ElMessage } from "element-plus";
 export default {
   name: "album",
@@ -172,7 +172,21 @@ export default {
     const imgs = reactive({
       img1: [],
     });
-    onMounted(() => {});
+    onUpdated(() => {
+      setTimeout(() => {
+        nextTick(() => {
+          console.log(imgsRef.value);
+          imgsRef.value.forEach((item, index) => {
+            if (
+              item.getBoundingClientRect().top > 0 &&
+              item.getBoundingClientRect().top < 0.653 * window.screen.height
+            )
+              item.src = item.getAttribute("dataUrl");
+          });
+        });
+      }, 100);
+    });
+
     const handleTabsEdit = (targetName, action) => {
       if (action === "add") {
         dialogVisible.value = true;

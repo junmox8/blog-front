@@ -201,13 +201,13 @@ export default {
           (item) => item != index
         );
       else selectTagValue.value.push(index);
-      searchType.value = selectTagValue.value.length == 3;
+      searchType.value = selectTagValue.value.length == 0 ? 1 : 3;
+      canScroll.value = false;
       selectTagValue.value.sort();
       page.value = 1;
       if (!time2) {
         time2.value = setTimeout(async () => {
           loading.value = true;
-          canScroll.value = false;
           const {
             data: { data: result },
           } = await searchArticleByTag(
@@ -225,7 +225,7 @@ export default {
         clearTimeout(time2.value);
         time2.value = setTimeout(async () => {
           loading.value = true;
-          canScroll.value = false;
+
           const {
             data: { data: result },
           } = await searchArticleByTag(
