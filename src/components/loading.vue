@@ -18,7 +18,7 @@
           <el-skeleton-item variant="text" style="width: 95%" />
           <el-skeleton-item
             variant="text"
-            style="width: 100%; margin-top: 19%"
+            style="width: 100%; margin-top: 10%"
           />
         </div>
         <!-- </div> -->

@@ -195,6 +195,62 @@ export default {
     const result3 = await getRecentArticle();
     this.recentArticle = result3.data.data;
     this.loading2 = false;
+    if (window.document.documentElement.offsetWidth < 1500) {
+      this.tags.splice(this.tags.length - 1, 1);
+    }
+    if (
+      window.document.documentElement.offsetWidth > 1900 &&
+      window.document.documentElement.offsetWidth < 2100
+    ) {
+      this.tags.push({ name: "angular", value: 65 });
+    }
+    if (
+      window.document.documentElement.offsetWidth > 2100 &&
+      window.document.documentElement.offsetWidth < 2300
+    ) {
+      this.tags.push({
+        value: 65,
+        name: "angular",
+      });
+      this.tags.push({ value: 63, name: "云服务" });
+    }
+    window.onresize = () => {
+      console.log(window.document.documentElement.offsetWidth);
+      if (window.document.documentElement.offsetWidth < 1500) {
+        this.tags = this.tags.filter((item, index) => index < 9);
+      }
+      if (
+        window.document.documentElement.offsetWidth > 1500 &&
+        window.document.documentElement.offsetWidth < 1700
+      ) {
+        while (this.tags.length == 9)
+          this.tags.push({ name: "webpack", value: 59 });
+        this.tags = this.tags.filter((item, index) => index < 10);
+      }
+
+      if (
+        window.document.documentElement.offsetWidth > 1900 &&
+        window.document.documentElement.offsetWidth < 2100
+      ) {
+        while (this.tags.length == 10)
+          this.tags.push({
+            value: 65,
+            name: "angular",
+          });
+        this.tags = this.tags.filter((item, index) => index < 11);
+      }
+      if (
+        window.document.documentElement.offsetWidth > 2100 &&
+        window.document.documentElement.offsetWidth < 2300
+      ) {
+        while (this.tags.length == 11)
+          this.tags.push({
+            value: 63,
+            name: "云服务",
+          });
+        this.tags = this.tags.filter((item, index) => index < 12);
+      }
+    };
   },
   setup() {
     const router = useRouter();
