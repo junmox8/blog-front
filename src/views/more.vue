@@ -304,7 +304,7 @@ export default {
           if (
             item.$el.getBoundingClientRect().top > 0 &&
             item.$el.getBoundingClientRect().top <
-              window.document.documentElement.offsetHeight * 0.37
+              window.document.documentElement.clientHeight - 200
           ) {
             canSee.value[index] = true;
           }
