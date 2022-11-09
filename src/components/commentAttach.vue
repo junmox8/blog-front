@@ -15,6 +15,14 @@
       </span>
     </template>
   </el-dialog>
+  <el-dialog v-model="dialogFormVisible2" title="确定要删除此评论吗">
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialogFormVisible2 = false">取消</el-button>
+        <el-button type="primary" @click="confirmDelete"> 确认 </el-button>
+      </span>
+    </template>
+  </el-dialog>
   <div class="commentAttach">
     <div class="commentAttach-title">
       <div class="commentAttach-title-left">
@@ -58,6 +66,15 @@
       >
         {{ content }}
       </div>
+      <div
+        :style="{
+          display: store.state.User.userId === fromUserId ? 'block' : 'none',
+        }"
+        class="deleteText"
+        @click="dialogFormVisible2 = true"
+      >
+        删除
+      </div>
       <div @click="() => (dialogFormVisible = true)" class="responce-Text">
         回复
       </div>
@@ -66,12 +83,17 @@
 </template>
 
 <script>
-import { getUserInfo, handUpCommentAttachAttach } from "../axios/service";
+import {
+  getUserInfo,
+  handUpCommentAttachAttach,
+  deleteCommentAttach,
+} from "../axios/service";
 import { ref, reactive, toRefs } from "vue";
 import { ElMessage } from "element-plus";
+import { useStore } from "vuex";
 export default {
   props: ["fromUserId", "toUserId", "time", "content", "id", "commentId"],
-  emits: ["resend"],
+  emits: ["resend", "del"],
   async created() {
     this.time_tr = this.time
       .replace(/T/g, " ")
@@ -91,6 +113,7 @@ export default {
     this.name2 = data3.name;
   },
   setup(props, { emit }) {
+    const store = useStore();
     const time_tr = ref("");
     const user1 = reactive({
       avatar: "",
@@ -103,6 +126,7 @@ export default {
     const dialogFormVisible = ref(false);
     const comment = ref("");
     const time2 = ref(null); //节流
+    const dialogFormVisible2 = ref(false);
     const handUpComment = async () => {
       if (!time2.value) {
         time2.value = setTimeout(() => {
@@ -134,6 +158,21 @@ export default {
           message: "请稍等一会再回复",
         });
     };
+    const confirmDelete = async () => {
+      const result = await deleteCommentAttach(props.id);
+      if (result.data.success == true) {
+        emit("del", props.id);
+        dialogFormVisible2.value = false;
+        ElMessage({
+          message: "删除留言成功",
+          type: "success",
+        });
+      } else
+        ElMessage({
+          message: result.data.errorMsg,
+          type: "error",
+        });
+    };
     return {
       time_tr,
       dialogFormVisible,
@@ -142,6 +181,9 @@ export default {
       ...toRefs(user1),
       ...toRefs(user2),
       handUpComment,
+      store,
+      confirmDelete,
+      dialogFormVisible2,
     };
   },
 };
@@ -232,5 +274,13 @@ export default {
   cursor: pointer;
   font-size: 12px;
   color: #8fc4f7;
+}
+.deleteText {
+  position: absolute;
+  bottom: 5px;
+  right: 30px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #ab2520;
 }
 </style>

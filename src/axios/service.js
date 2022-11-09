@@ -168,3 +168,23 @@ export const searchArticleByTag = async (tags, word, page) => {
       page
   );
 };
+export const deleteMessage = async (id) => {
+  return Axios.post("/api/message/deleteMessage", {
+    id,
+  });
+};
+export const deleteMessageAttach = async (id) => {
+  return Axios.post("/api/message/deleteMessageAttach", {
+    id,
+  });
+};
+export const deleteComment = async (id) => {
+  return Axios.post("/api/articleComment/deleteComment", {
+    id,
+  });
+};
+export const deleteCommentAttach = async (id) => {
+  return Axios.post("/api/articleComment/deleteCommentAttach", {
+    id,
+  });
+};

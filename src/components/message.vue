@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="dialogFormVisible" title="添加评论">
+  <el-dialog v-model="dialogFormVisible" title="添加留言">
     <el-input
       v-model="message"
       :autosize="{ minRows: 2 }"
@@ -12,6 +12,14 @@
       <span class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
         <el-button type="primary" @click="handUpMessage">确认</el-button>
+      </span>
+    </template>
+  </el-dialog>
+  <el-dialog v-model="dialogFormVisible2" title="确定要删除此留言吗">
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialogFormVisible2 = false">取消</el-button>
+        <el-button type="primary" @click="confirmDelete"> 确认 </el-button>
       </span>
     </template>
   </el-dialog>
@@ -43,11 +51,21 @@
       <div class="message-container-content">
         {{ content }}
       </div>
+      <div
+        :style="{
+          display: store.state.User.userId == userId ? 'block' : 'none',
+        }"
+        class="deleteText"
+        @click="dialogFormVisible2 = true"
+      >
+        删除
+      </div>
       <div @click="() => (dialogFormVisible = true)" class="responceText">
         回复
       </div>
     </div>
     <messageAttach
+      @del="del"
       @resend="resend"
       v-for="(item, index) in messageAttach"
       :key="index"
@@ -62,16 +80,22 @@
 </template>
 
 <script>
-import { handUpMessageAttach, getTheMessageAttach } from "../axios/service";
+import {
+  handUpMessageAttach,
+  getTheMessageAttach,
+  deleteMessage,
+} from "../axios/service";
 import { ref } from "vue";
 import messageAttach from "./messageAttach.vue";
 import dayjs from "dayjs";
 import { ElMessage } from "element-plus";
+import { useStore } from "vuex";
 export default {
   components: {
     messageAttach,
   },
   props: ["content", "time", "avatar", "name", "index", "userId", "id", "page"],
+  emits: ["del"],
   async created() {
     this.time_tr = this.time
       .replace(/T/g, " ")
@@ -87,9 +111,11 @@ export default {
     });
     this.messageAttach = result.data.data;
   },
-  setup(props) {
+  setup(props, context) {
+    const store = useStore();
     const time_tr = ref("");
     const dialogFormVisible = ref(false);
+    const dialogFormVisible2 = ref(false);
     const message = ref("");
     const messageAttach = ref([]);
     const time2 = ref(null); //节流
@@ -147,14 +173,38 @@ export default {
       });
       messageAttach.value = result.data.data;
     };
+    const confirmDelete = async () => {
+      const result = await deleteMessage(props.id);
+      if (result.data.success == true) {
+        context.emit("del", props.id);
+        dialogFormVisible2.value = false;
+        ElMessage({
+          message: "删除留言成功",
+          type: "success",
+        });
+      } else
+        ElMessage({
+          message: result.data.errorMsg,
+          type: "error",
+        });
+    };
+    const del = async (id) => {
+      messageAttach.value = messageAttach.value.filter(
+        (item) => item.id !== id
+      );
+    };
     return {
       time_tr,
       dialogFormVisible,
+      dialogFormVisible2,
       message,
       messageAttach,
       time2,
       handUpMessage,
       resend,
+      store,
+      confirmDelete,
+      del,
     };
   },
 };
@@ -219,6 +269,14 @@ export default {
   cursor: pointer;
   font-size: 12px;
   color: #8fc4f7;
+}
+.deleteText {
+  position: absolute;
+  bottom: 5px;
+  right: 30px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #ab2520;
 }
 .messageAttach:nth-last-child(1) {
   border-style: hidden;

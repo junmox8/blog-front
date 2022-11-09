@@ -15,6 +15,14 @@
       </span>
     </template>
   </el-dialog>
+  <el-dialog v-model="dialogFormVisible2" title="确定要删除此评论吗">
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialogFormVisible2 = false">取消</el-button>
+        <el-button type="primary" @click="confirmDelete"> 确认 </el-button>
+      </span>
+    </template>
+  </el-dialog>
   <div class="comment-container">
     <div class="comment-container-avatar">
       <img
@@ -43,11 +51,21 @@
       <div class="comment-container-content">
         {{ content }}
       </div>
+      <div
+        :style="{
+          display: store.state.User.userId === userId ? 'block' : 'none',
+        }"
+        class="deleteText"
+        @click="dialogFormVisible2 = true"
+      >
+        删除
+      </div>
       <div @click="() => (dialogFormVisible = true)" class="responceText">
         回复
       </div>
     </div>
     <commentAttach
+      @del="del"
       @resend="resend"
       v-for="(item, index) in commentAttach"
       :key="index"
@@ -62,11 +80,16 @@
 </template>
 
 <script>
-import { handUpCommentAttach, getTheCommentAttach } from "../axios/service";
+import {
+  handUpCommentAttach,
+  getTheCommentAttach,
+  deleteComment,
+} from "../axios/service";
 import { ref } from "vue";
 import commentAttach from "./commentAttach.vue";
 import dayjs from "dayjs";
 import { ElMessage } from "element-plus";
+import { useStore } from "vuex";
 export default {
   components: {
     commentAttach,
@@ -82,6 +105,7 @@ export default {
     "id",
     "page",
   ],
+  emits: ["del"],
   async created() {
     this.time_tr = this.time
       .replace(/T/g, " ")
@@ -97,7 +121,9 @@ export default {
     });
     this.commentAttach = result.data.data;
   },
-  setup(props) {
+  setup(props, context) {
+    const dialogFormVisible2 = ref(false);
+    const store = useStore();
     const time_tr = ref("");
     const dialogFormVisible = ref(false);
     const comment = ref("");
@@ -153,6 +179,26 @@ export default {
       });
       commentAttach.value = result.data.data;
     };
+    const confirmDelete = async () => {
+      const result = await deleteComment(props.id);
+      if (result.data.success == true) {
+        context.emit("del", props.id);
+        dialogFormVisible2.value = false;
+        ElMessage({
+          message: "删除评论成功",
+          type: "success",
+        });
+      } else
+        ElMessage({
+          message: result.data.errorMsg,
+          type: "error",
+        });
+    };
+    const del = async (id) => {
+      commentAttach.value = commentAttach.value.filter(
+        (item) => item.id !== id
+      );
+    };
     return {
       time_tr,
       dialogFormVisible,
@@ -161,6 +207,10 @@ export default {
       time2,
       handUpComment,
       resend,
+      store,
+      confirmDelete,
+      del,
+      dialogFormVisible2,
     };
   },
 };
@@ -224,6 +274,14 @@ export default {
   cursor: pointer;
   font-size: 12px;
   color: #8fc4f7;
+}
+.deleteText {
+  position: absolute;
+  bottom: 5px;
+  right: 30px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #ab2520;
 }
 .commentAttach:nth-last-child(1) {
   border-style: hidden;

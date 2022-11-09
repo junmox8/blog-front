@@ -10,5 +10,15 @@ Axios.interceptors.request.use((request) => {
   };
   return request;
 });
-Axios.interceptors.response.use();
+Axios.interceptors.response.use(
+  (responce) => {
+    if (responce.data.errorMsg == "请重新登录") {
+      location.replace("http://localhost:8080/login");
+    }
+    return responce;
+  },
+  (error) => {
+    console.log(error);
+  }
+);
 export default Axios;

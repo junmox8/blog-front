@@ -183,7 +183,6 @@ export default {
       }
     };
     const login = async (e, type) => {
-      console.log(e);
       if (type == 0 || e.keyCode === 13) {
         if (login_username.value && login_password.value) {
           loading.value = true;
@@ -196,6 +195,7 @@ export default {
               message: "用户登录成功",
               type: "success",
             });
+            store.dispatch("User/setUserId", result.data.data.dataValues.id);
             store.dispatch("User/setToken", result.data.data.token);
             localStorage.setItem("token", result.data.data.token);
             router.push("/home?id=" + result.data.data.dataValues.id);

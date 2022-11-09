@@ -147,7 +147,7 @@
             v-for="(anchor, index) in titles"
             :key="index"
             :style="{
-              padding: `0px 0px 10px ${(anchor.indent - 1) * 20}px`,
+              padding: `10px 0 10px ${anchor.indent * 20}px`,
               marginBottom: '5px',
             }"
             @click="handleAnchorClick(anchor, index)"
@@ -188,6 +188,7 @@
     <div class="comment-area">
       <el-skeleton :rows="8" v-if="commentArr.length == 0 && number != 0" />
       <comment
+        @del="del"
         v-for="(item, index) in commentArr"
         :key="index"
         :content="item.content"
@@ -408,6 +409,11 @@ export default {
       )
         mulu.value.$el.style.opacity = 1;
     };
+    const del = async () => {
+      number.value--;
+      if (number.value <= (currentPage.value - 1) * 5) currentPage.value--;
+      changePage(currentPage.value);
+    };
     return {
       ...toRefs(obj),
       textarea,
@@ -425,6 +431,7 @@ export default {
       cursorTitle,
       articleCard,
       ...toRefs(loadings),
+      del
     };
   },
 };

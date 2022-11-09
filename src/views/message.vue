@@ -43,6 +43,7 @@
         <el-skeleton :rows="8" v-if="messageArr.length == 0 && number != 0" />
         <message
           v-for="(item, index) in messageArr"
+          @del="del"
           :key="index"
           :content="item.content"
           :time="item.createdAt"
@@ -165,6 +166,11 @@ export default {
       });
       messageArr.value = result.data.data;
     };
+    const del = async () => {
+      number.value--;
+      if (number.value <= (currentPage.value - 1) * 5) currentPage.value--;
+      changePage(currentPage.value);
+    };
     return {
       text,
       textarea,
@@ -175,6 +181,7 @@ export default {
       time,
       handupComment,
       changePage,
+      del,
     };
   },
 };
